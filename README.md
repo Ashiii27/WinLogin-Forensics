@@ -106,7 +106,7 @@ run.bat
 ┌──────────────────────────────────────────────────────────┐
 │                     Streamlit Web UI                     │
 │                                                          │
-│   Home · Event Logs · Registry · Sessions · Anomalies   │
+│   Home · Event Logs · Registry · Sessions · Anomalies    │
 │                  Timeline · Report                       │
 └──────────────────────────┬───────────────────────────────┘
                            │
@@ -126,7 +126,7 @@ run.bat
 ┌──────────────────────────▼───────────────────────────────┐
 │                       Input Files                        │
 │                                                          │
-│         Security.evtx  ·  SAM  ·  SYSTEM  ·  SECURITY   │
+│         Security.evtx  ·  SAM  ·  SYSTEM  ·  SECURITY    │
 └──────────────────────────────────────────────────────────┘
 ```
 
