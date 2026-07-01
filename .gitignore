@@ -1,0 +1,33 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.env
+
+# Streamlit
+.streamlit/
+
+# Output artifacts
+output/reports/*
+output/exports/*
+!output/reports/.gitkeep
+!output/exports/.gitkeep
+
+# Acquired forensic artifacts (never commit real evidence)
+data/samples/*.evtx
+data/samples/SAM
+data/samples/SYSTEM
+data/samples/SECURITY
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
