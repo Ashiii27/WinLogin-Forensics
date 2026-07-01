@@ -1,33 +1,280 @@
-﻿# Python
+﻿# ============================================================
+# Python
+# ============================================================
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
 .Python
+develop-eggs/
+downloads/
+eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================================
+# Virtual Environments
+# ============================================================
 venv/
 env/
+ENV/
+.venv/
+.env/
+virtualenv/
+
+# ============================================================
+# Environment Variables & Secrets
+# ============================================================
 .env
+.env.local
+.env.*.local
+.env.production
+*.pem
+*.key
+secrets.json
+config.local.*
 
+# ============================================================
+# IDE / Editor
+# ============================================================
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*.swn
+*~
+*.sublime-project
+*.sublime-workspace
+.spyderproject
+.spyproject
+.ropeproject
+
+# ============================================================
+# Testing & Coverage
+# ============================================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.cache/
+nosetests.xml
+
+# ============================================================
+# Type Checking & Linting
+# ============================================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+.flake8_cache/
+
+# ============================================================
+# Profiling
+# ============================================================
+*.prof
+*.lprof
+*.pstats
+
+# ============================================================
+# Jupyter Notebooks
+# ============================================================
+.ipynb_checkpoints
+*.ipynb
+profile_default/
+ipython_config.py
+
+# ============================================================
 # Streamlit
-.streamlit/
+# ============================================================
+.streamlit/secrets.toml
+.streamlit/config.toml
 
-# Output artifacts
-output/reports/*
-output/exports/*
-!output/reports/.gitkeep
-!output/exports/.gitkeep
+# ============================================================
+# Documentation Builds
+# ============================================================
+docs/_build/
+docs/_static/
+docs/_templates/
+site/
+.readthedocs.yml.local
 
-# Acquired forensic artifacts (never commit real evidence)
+# ============================================================
+# Forensic Evidence Files (CRITICAL - NEVER COMMIT)
+# ============================================================
+# Event Logs
 data/samples/*.evtx
+data/samples/*.evt
+data/samples/Security_*
+data/samples/System_*
+data/samples/Application_*
+
+# Registry Hives
 data/samples/SAM
 data/samples/SYSTEM
 data/samples/SECURITY
+data/samples/SOFTWARE
+data/samples/DEFAULT
+data/samples/NTUSER.DAT
+data/samples/UsrClass.dat
+data/samples/SAM_*
+data/samples/SYSTEM_*
+data/samples/SECURITY_*
+data/samples/SOFTWARE_*
 
-# OS
-.DS_Store
+# Registry Transaction Logs
+data/samples/*.LOG
+data/samples/*.LOG1
+data/samples/*.LOG2
+data/samples/*.regtrans-ms
+data/samples/*.blf
+
+# Other Forensic Artifacts
+data/samples/*.hive
+data/samples/*.reg
+data/samples/*.pf
+data/samples/*.lnk
+data/samples/*.job
+
+# Disk Images (huge files)
+data/samples/*.raw
+data/samples/*.dd
+data/samples/*.e01
+data/samples/*.ex01
+data/samples/*.aff
+data/samples/*.vmdk
+data/samples/*.vhd
+
+# Private data folders
+data/private/
+data/evidence/
+data/cases/
+
+# ============================================================
+# Generated Reports & Exports
+# ============================================================
+output/reports/*.html
+output/reports/*.pdf
+output/reports/*.docx
+output/exports/*.csv
+output/exports/*.xlsx
+output/exports/*.json
+output/exports/*.xml
+output/temp/
+
+# ============================================================
+# Logs
+# ============================================================
+*.log
+logs/
+log/
+*.log.*
+
+# ============================================================
+# Databases (if caching is added later)
+# ============================================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# ============================================================
+# Archives (may contain evidence)
+# ============================================================
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.gz
+*.bz2
+
+# ============================================================
+# Backups & Temp Files
+# ============================================================
+*.bak
+*.backup
+*.old
+*.orig
+*.tmp
+*.temp
+~$*
+*.~*
+
+# ============================================================
+# Exploration & Scratch (Phase 0 throwaway code)
+# ============================================================
+explore_*.py
+scratch_*.py
+sandbox_*.py
+test_output_*.txt
+notes_*.md
+
+# ============================================================
+# OS Files
+# ============================================================
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+[Dd]esktop.ini
 
-# IDE
-.vscode/
-.idea/
-*.swp
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================
+# PDF Engine (wkhtmltopdf if bundled)
+# ============================================================
+wkhtmltopdf/
+bin/wkhtmltopdf*
+
+# ============================================================
+# Keep Empty Folders
+# ============================================================
+!data/samples/.gitkeep
+!output/reports/.gitkeep
+!output/exports/.gitkeep
+!docs/screenshots/.gitkeep
+!.gitkeep
