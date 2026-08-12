@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forensic Report — {{ case.case_number }}</title>
+  <style>
+    :root {
+      --primary: #1e3a5f;
+      --accent: #2563eb;
+      --high: #dc2626;
+      --medium: #d97706;
+      --low: #65a30d;
+      --bg: #f8fafc;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 11pt;
+      line-height: 1.55;
+      color: var(--text);
+      background: #fff;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 32px;
+    }
+    header.report-header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+    header.report-header h1 {
+      font-size: 22pt;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    header.report-header .subtitle {
+      color: var(--muted);
+      font-size: 10pt;
+    }
+    header.report-header .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px 24px;
+      margin-top: 16px;
+      font-size: 9.5pt;
+    }
+    header.report-header .meta-grid span.label { color: var(--muted); }
+    section {
+      margin-bottom: 32px;
+      page-break-inside: avoid;
+    }
+    h2 {
+      font-size: 14pt;
+      color: var(--primary);
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+      margin-bottom: 14px;
+    }
+    h3 {
+      font-size: 11pt;
+      color: var(--primary);
+      margin: 16px 0 8px;
+    }
+    p, li { margin-bottom: 6px; }
+    ul { padding-left: 20px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9pt;
+      margin-bottom: 12px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+    tr:nth-child(even) { background: var(--bg); }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 8pt;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-high { background: #fee2e2; color: var(--high); }
+    .badge-medium { background: #fef3c7; color: var(--medium); }
+    .badge-low { background: #ecfccb; color: var(--low); }
+    .badge-detected { background: #dcfce7; color: #166534; }
+    .badge-not-detected { background: #f1f5f9; color: var(--muted); }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-card .value {
+      font-size: 18pt;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .stat-card .label {
+      font-size: 8.5pt;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .coc-block, .integrity-block {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 8.5pt;
+      word-break: break-all;
+    }
+    .hash { font-size: 8pt; color: var(--muted); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media print {
+      body { padding: 0; }
+      section { page-break-inside: avoid; }
+    }
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    footer {
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 8pt;
+      color: var(--muted);
+      text-align: center;
+    }
+    .timeline-container { margin: 12px 0; overflow-x: auto; }
+    .note { font-size: 9pt; color: var(--muted); font-style: italic; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="report-header">
+    <h1>{{ tool_name }} — Forensic Analysis Report</h1>
+    <p class="subtitle">Generated {{ generated_at }} · Tool version {{ tool_version }}</p>
+    <div class="meta-grid">
+      <div><span class="label">Case Number:</span> {{ case.case_number }}</div>
+      <div><span class="label">Investigator:</span> {{ case.investigator }}</div>
+      <div><span class="label">Organization:</span> {{ case.organization }}</div>
+      <div><span class="label">Analysis Date:</span> {{ case.analysis_date }}</div>
+      <div><span class="label">System Hostname:</span> {{ case.system_hostname }}</div>
+      <div><span class="label">System OS:</span> {{ case.system_os }}</div>
+      <div><span class="label">Event Time Range:</span> {{ time_range.start }} — {{ time_range.end }}</div>
+    </div>
+  </header>
+  <!-- 1. Chain of Custody -->
+  <section id="chain-of-custody">
