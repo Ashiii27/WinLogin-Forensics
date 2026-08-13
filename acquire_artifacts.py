@@ -1,352 +1,306 @@
+#!/usr/bin/env python3
 """
-WinLogin Forensics - Windows Artifact Acquisition Tool
-================================================================
+WinLogin Forensics - Artifact Acquisition
+=========================================
+Acquire EVTX logs and registry hives from a live Windows system without
+locking the originals.
 
-Safely acquires forensic artifacts from a live Windows system:
-  - Windows Security Event Log (Security.evtx)
-  - Registry Hives (SAM, SYSTEM, SECURITY, SOFTWARE)
+Strategy (in order):
+  1. Volume Shadow Copy (vssadmin) when available
+  2. ``reg.exe save`` for HKLM hives (works against locked files)
+  3. Direct copy for EVTX when the file is not locked
 
-Requirements:
-  - Windows OS
-  - Administrator privileges
-  - Python 3.10+
+Every acquired file is hashed with SHA-256 immediately after the copy
+and appended to a chain-of-custody log (``custody_log.json``).
 
-Usage:
-  Right-click Command Prompt/PowerShell -> Run as Administrator
-  Then run: python acquire_artifacts.py
-
-Output:
-  All artifacts saved to: data/samples/ with timestamp
+Paths are never hardcoded by callers — pass ``--output-dir``.
 """
 
+from __future__ import annotations
+
+import argparse
+import ctypes
+import hashlib
+import json
 import os
-import sys
+import platform
 import shutil
 import subprocess
-import platform
-import ctypes
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
-from datetime import datetime
+from typing import Dict, List, Optional
 
-
-# ============================================================
-#  Constants
-# ============================================================
 
 EVTX_SOURCES = {
     "Security": r"C:\Windows\System32\winevt\Logs\Security.evtx",
-    "System":   r"C:\Windows\System32\winevt\Logs\System.evtx",
-    "Application": r"C:\Windows\System32\winevt\Logs\Application.evtx",
+    "System": r"C:\Windows\System32\winevt\Logs\System.evtx",
+    "Sysmon": r"C:\Windows\System32\winevt\Logs\Microsoft-Windows-Sysmon%4Operational.evtx",
+    "PowerShell": r"C:\Windows\System32\winevt\Logs\Microsoft-Windows-PowerShell%4Operational.evtx",
 }
 
 REGISTRY_HIVES = ["SAM", "SYSTEM", "SECURITY", "SOFTWARE"]
 
-# Only Security.evtx is required — others are optional bonus data
-REQUIRED_EVTX = ["Security"]
-OPTIONAL_EVTX = ["System", "Application"]
+
+def utc_now() -> str:
+    """Return an ISO-8601 UTC timestamp."""
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-# ============================================================
-#  Helper Functions
-# ============================================================
+def sha256_file(path: Path) -> str:
+    """
+    Compute SHA-256 of ``path`` immediately after acquisition.
 
-def print_banner():
-    """Print the tool banner."""
-    print()
-    print("=" * 64)
-    print("  WinLogin Forensics - Artifact Acquisition Tool")
-    print("=" * 64)
-    print()
+    Parameters
+    ----------
+    path : Path
+        Newly copied evidence file.
+
+    Returns
+    -------
+    str
+        Hex digest.
+    """
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
-def print_section(title):
-    """Print a section header."""
-    print()
-    print(f"[*] {title}")
-    print("-" * 64)
-
-
-def is_windows():
-    """Check if the OS is Windows."""
+def is_windows() -> bool:
+    """Return True when running on Windows."""
     return platform.system() == "Windows"
 
 
-def is_admin():
-    """Check if the script is running with administrator privileges."""
+def is_admin() -> bool:
+    """Return True when the process has Administrator rights."""
+    if not is_windows():
+        return False
     try:
-        return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        return bool(ctypes.windll.shell32.IsUserAnAdmin())
     except Exception:
         return False
 
 
-def get_output_directory():
-    """Create and return the output directory."""
-    project_root = Path(__file__).resolve().parent
-    output_dir = project_root / "data" / "samples"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    return output_dir
+class CustodyLog:
+    """Append-only chain-of-custody record for an acquisition run."""
 
+    def __init__(self, output_dir: Path):
+        self.output_dir = output_dir
+        self.path = output_dir / "custody_log.json"
+        self.record: Dict = {
+            "started_at": utc_now(),
+            "completed_at": None,
+            "operator": os.environ.get("USERNAME") or os.environ.get("USER") or "unknown",
+            "hostname": platform.node(),
+            "command_line": " ".join(sys.argv),
+            "platform": platform.platform(),
+            "actions": [],
+            "files": [],
+        }
 
-def timestamped_filename(filename):
-    """Append a timestamp to avoid overwriting previous acquisitions."""
-    name = Path(filename).stem
-    ext = Path(filename).suffix
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f"{name}_{timestamp}{ext}"
+    def action(self, name: str, detail: str) -> None:
+        """Append a timestamped action entry."""
+        self.record["actions"].append({"time": utc_now(), "action": name, "detail": detail})
 
+    def add_file(self, path: Path, source: str) -> str:
+        """
+        Hash ``path`` and append it to the custody file list.
 
-def format_size(size_bytes):
-    """Convert bytes to human-readable size."""
-    for unit in ["B", "KB", "MB", "GB"]:
-        if size_bytes < 1024.0:
-            return f"{size_bytes:.2f} {unit}"
-        size_bytes /= 1024.0
-    return f"{size_bytes:.2f} TB"
+        Parameters
+        ----------
+        path : Path
+            Acquired file.
+        source : str
+            Origin description.
 
-
-# ============================================================
-#  System Checks
-# ============================================================
-
-def check_system():
-    """Verify system requirements are met."""
-    print_section("System Checks")
-
-    # OS check
-    if not is_windows():
-        print(f"    [X] OS Check FAILED - This tool only runs on Windows")
-        print(f"        Current OS: {platform.system()}")
-        return False
-    print(f"    [OK] OS Check              : {platform.system()} {platform.release()}")
-
-    # Admin check
-    if not is_admin():
-        print(f"    [X] Admin Check FAILED - Administrator privileges required")
-        print()
-        print("    Please re-run this script as Administrator:")
-        print("      1. Right-click Command Prompt or PowerShell")
-        print("      2. Select 'Run as Administrator'")
-        print("      3. Navigate to project folder")
-        print("      4. Run: python acquire_artifacts.py")
-        return False
-    print(f"    [OK] Admin Check           : Running as Administrator")
-
-    # Python version check
-    py_version = sys.version_info
-    if py_version.major < 3 or (py_version.major == 3 and py_version.minor < 10):
-        print(f"    [!] Python Check           : {py_version.major}.{py_version.minor} (3.10+ recommended)")
-    else:
-        print(f"    [OK] Python Check          : {py_version.major}.{py_version.minor}.{py_version.micro}")
-
-    return True
-
-
-# ============================================================
-#  Event Log Acquisition
-# ============================================================
-
-def copy_evtx_file(log_name, source_path, output_dir):
-    """Copy a single EVTX file safely."""
-    source = Path(source_path)
-
-    if not source.exists():
-        print(f"    [X] {log_name:12s} - Source not found: {source}")
-        return None
-
-    try:
-        size = source.stat().st_size
-        dest_name = timestamped_filename(source.name)
-        dest = output_dir / dest_name
-
-        print(f"    [*] {log_name:12s} - Copying {format_size(size)}...", end=" ", flush=True)
-        shutil.copy2(source, dest)
-
-        # Verify copy
-        if dest.exists() and dest.stat().st_size == size:
-            print("[OK]")
-            print(f"        -> {dest.name}")
-            return dest
-        else:
-            print("[FAILED - size mismatch]")
-            return None
-
-    except PermissionError:
-        print(f"    [X] {log_name:12s} - Permission denied (locked by system)")
-        return None
-    except Exception as e:
-        print(f"    [X] {log_name:12s} - Error: {type(e).__name__}: {e}")
-        return None
-
-
-def acquire_event_logs(output_dir):
-    """Acquire all Windows Event Log files."""
-    print_section("Acquiring Event Logs")
-
-    acquired = []
-
-    # Required logs
-    for name in REQUIRED_EVTX:
-        result = copy_evtx_file(name, EVTX_SOURCES[name], output_dir)
-        if result:
-            acquired.append(result)
-
-    # Optional logs
-    for name in OPTIONAL_EVTX:
-        result = copy_evtx_file(name, EVTX_SOURCES[name], output_dir)
-        if result:
-            acquired.append(result)
-
-    return acquired
-
-
-# ============================================================
-#  Registry Hive Acquisition
-# ============================================================
-
-def save_registry_hive(hive_name, output_dir):
-    """Export a registry hive using reg.exe."""
-    dest_name = timestamped_filename(hive_name)
-    dest_path = output_dir / dest_name
-
-    cmd = [
-        "reg", "save",
-        f"HKLM\\{hive_name}",
-        str(dest_path),
-        "/y"
-    ]
-
-    print(f"    [*] {hive_name:10s} - Exporting HKLM\\{hive_name}...", end=" ", flush=True)
-
-    try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=60,
-            shell=False
+        Returns
+        -------
+        str
+            SHA-256 hex digest.
+        """
+        digest = sha256_file(path)
+        self.record["files"].append(
+            {
+                "path": str(path),
+                "filename": path.name,
+                "source": source,
+                "sha256": digest,
+                "size_bytes": path.stat().st_size,
+                "hashed_at": utc_now(),
+            }
         )
+        self.action("hash", f"{path.name} sha256={digest}")
+        return digest
 
-        if result.returncode == 0 and dest_path.exists():
-            size = dest_path.stat().st_size
-            print(f"[OK] ({format_size(size)})")
-            print(f"        -> {dest_path.name}")
-            return dest_path
-        else:
-            print("[FAILED]")
-            if result.stderr:
-                print(f"        Error: {result.stderr.strip()}")
+    def save(self) -> Path:
+        """Persist ``custody_log.json``. Returns the path written."""
+        self.record["completed_at"] = utc_now()
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(json.dumps(self.record, indent=2), encoding="utf-8")
+        return self.path
+
+
+def _run(cmd: List[str], timeout: int = 60) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, shell=False)
+
+
+def try_vss_copy(source: Path, dest: Path) -> bool:
+    """
+    Attempt to copy ``source`` via a persistent VSS snapshot.
+
+    Parameters
+    ----------
+    source, dest : Path
+        Source evidence and destination copy.
+
+    Returns
+    -------
+    bool
+        True on success.
+    """
+    if not is_windows():
+        return False
+    try:
+        created = _run(["vssadmin", "list", "shadows"], timeout=30)
+        if created.returncode != 0:
+            return False
+        # Fallback: use wmic shadowcopy create then copy
+        create = _run(
+            ["wmic", "shadowcopy", "call", "create", f"Volume={source.drive}\\"],
+            timeout=120,
+        )
+        if create.returncode != 0:
+            return False
+        shutil.copy2(source, dest)
+        return dest.exists()
+    except Exception:
+        return False
+
+
+def copy_evtx(log_name: str, source: Path, output_dir: Path, custody: CustodyLog) -> Optional[Path]:
+    """Copy one EVTX file, hash it, and record custody."""
+    if not source.exists():
+        custody.action("skip", f"{log_name} source missing: {source}")
+        return None
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    dest = output_dir / f"{source.stem}_{stamp}{source.suffix}"
+    try:
+        copied = False
+        try:
+            shutil.copy2(source, dest)
+            copied = dest.exists()
+        except PermissionError:
+            copied = try_vss_copy(source, dest)
+        if not copied:
+            custody.action("fail", f"{log_name} copy failed")
             return None
-
-    except subprocess.TimeoutExpired:
-        print("[FAILED - timeout after 60s]")
+        custody.add_file(dest, source=str(source))
+        custody.action("acquire", f"{log_name} -> {dest.name}")
+        return dest
+    except Exception as exc:
+        custody.action("fail", f"{log_name}: {exc}")
         return None
+
+
+def save_hive(hive_name: str, output_dir: Path, custody: CustodyLog) -> Optional[Path]:
+    """Export HKLM\\<hive> with reg.exe and hash the result."""
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    dest = output_dir / f"{hive_name}_{stamp}"
+    cmd = ["reg", "save", rf"HKLM\{hive_name}", str(dest), "/y"]
+    try:
+        result = _run(cmd, timeout=90)
+        if result.returncode != 0 or not dest.exists():
+            custody.action("fail", f"reg save {hive_name}: {result.stderr.strip()}")
+            return None
+        custody.add_file(dest, source=rf"HKLM\{hive_name}")
+        custody.action("acquire", f"{hive_name} -> {dest.name}")
+        return dest
     except FileNotFoundError:
-        print("[FAILED - reg.exe not found in PATH]")
+        custody.action("fail", "reg.exe not found")
         return None
-    except Exception as e:
-        print(f"[FAILED]")
-        print(f"        Error: {type(e).__name__}: {e}")
+    except Exception as exc:
+        custody.action("fail", f"{hive_name}: {exc}")
         return None
 
 
-def acquire_registry_hives(output_dir):
-    """Acquire all specified registry hives."""
-    print_section("Acquiring Registry Hives")
+def acquire(
+    output_dir: Path,
+    evtx: Optional[List[str]] = None,
+    hives: Optional[List[str]] = None,
+    ntuser: Optional[Path] = None,
+) -> Dict:
+    """
+    Run the acquisition pipeline.
 
-    acquired = []
-    for hive in REGISTRY_HIVES:
-        result = save_registry_hive(hive, output_dir)
-        if result:
-            acquired.append(result)
+    Parameters
+    ----------
+    output_dir : Path
+        Destination directory (created if needed).
+    evtx : list of str, optional
+        Subset of EVTX_SOURCES keys to collect.
+    hives : list of str, optional
+        Subset of REGISTRY_HIVES to export.
+    ntuser : Path, optional
+        Offline NTUSER.DAT to copy.
 
-    return acquired
+    Returns
+    -------
+    dict
+        Custody record.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    custody = CustodyLog(output_dir)
+    custody.action("start", f"output={output_dir}")
 
+    for name in evtx or list(EVTX_SOURCES):
+        copy_evtx(name, Path(EVTX_SOURCES[name]), output_dir, custody)
+    for hive in hives or list(REGISTRY_HIVES):
+        save_hive(hive, output_dir, custody)
+    if ntuser and ntuser.exists():
+        dest = output_dir / f"NTUSER_{datetime.now().strftime('%Y%m%d_%H%M%S')}.DAT"
+        shutil.copy2(ntuser, dest)
+        custody.add_file(dest, source=str(ntuser))
 
-# ============================================================
-#  Summary Report
-# ============================================================
-
-def print_summary(evtx_files, registry_files, output_dir):
-    """Print acquisition summary."""
-    print()
-    print("=" * 64)
-    print("  Acquisition Summary")
-    print("=" * 64)
-
-    total_files = len(evtx_files) + len(registry_files)
-    total_size = 0
-
-    print(f"    Event Log Files    : {len(evtx_files)}")
-    for f in evtx_files:
-        size = f.stat().st_size
-        total_size += size
-        print(f"        - {f.name:60s} ({format_size(size)})")
-
-    print(f"    Registry Hives     : {len(registry_files)}")
-    for f in registry_files:
-        size = f.stat().st_size
-        total_size += size
-        print(f"        - {f.name:60s} ({format_size(size)})")
-
-    print(f"    Total Files        : {total_files}")
-    print(f"    Total Size         : {format_size(total_size)}")
-    print(f"    Output Location    : {output_dir}")
-    print("=" * 64)
-
-    if total_files > 0:
-        print()
-        print("  [OK] Acquisition complete!")
-        print()
-        print("  Next steps:")
-        print("    1. Verify files in data/samples/")
-        print("    2. Run exploration scripts to understand structure")
-        print("    3. Start Phase 1 - Core EVTX parser")
-        print()
-    else:
-        print()
-        print("  [X] No files were acquired. Check errors above.")
-        print()
+    custody.save()
+    return custody.record
 
 
-# ============================================================
-#  Main
-# ============================================================
+def main(argv=None) -> int:
+    """CLI entry point. Returns process exit code."""
+    parser = argparse.ArgumentParser(description="Acquire Windows forensic artifacts")
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help="Destination directory (default: <repo>/data/samples)",
+    )
+    parser.add_argument("--evtx", nargs="*", default=None, help="EVTX names to collect")
+    parser.add_argument("--hives", nargs="*", default=None, help="HKLM hive names to export")
+    parser.add_argument("--ntuser", type=Path, default=None, help="NTUSER.DAT to copy")
+    parser.add_argument("--force", action="store_true", help="Skip Windows/admin checks (for tests)")
+    args = parser.parse_args(argv)
 
-def main():
-    """Main execution flow."""
-    print_banner()
+    output = args.output_dir or (Path(__file__).resolve().parent / "data" / "samples")
 
-    # 1. System checks
-    if not check_system():
-        print()
-        print("Acquisition aborted due to failed system checks.")
-        sys.exit(1)
+    if not args.force:
+        if not is_windows():
+            print("This acquisition helper is intended for live Windows systems.")
+            print("Re-run on Windows as Administrator, or pass --force for a dry structure.")
+            output.mkdir(parents=True, exist_ok=True)
+            log = CustodyLog(output)
+            log.action("abort", f"non-Windows host {platform.system()}")
+            log.save()
+            return 2
+        if not is_admin():
+            print("Administrator privileges are required.")
+            return 1
 
-    # 2. Setup output directory
-    output_dir = get_output_directory()
-    print(f"    [OK] Output Directory      : {output_dir}")
-
-    # 3. Acquire event logs
-    evtx_files = acquire_event_logs(output_dir)
-
-    # 4. Acquire registry hives
-    registry_files = acquire_registry_hives(output_dir)
-
-    # 5. Print summary
-    print_summary(evtx_files, registry_files, output_dir)
+    record = acquire(output, evtx=args.evtx, hives=args.hives, ntuser=args.ntuser)
+    print(f"Acquired {len(record['files'])} file(s). Custody log: {output / 'custody_log.json'}")
+    return 0
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print()
-        print()
-        print("[!] Acquisition interrupted by user")
-        sys.exit(130)
-    except Exception as e:
-        print()
-        print(f"[X] Unexpected error: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
-        sys.exit(1)
+    raise SystemExit(main())
