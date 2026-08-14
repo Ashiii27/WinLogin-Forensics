@@ -1,0 +1,15 @@
+{
+  "name": "brute_force_t1110",
+  "source": "synthetic-atomic-red-team-T1110.001",
+  "ground_truth": [
+    {"rule": "Repeated 4625", "technique_id": "T1110.001", "present": true}
+  ],
+  "events": [
+    {"EventID": 4625, "TimeCreated": "2026-08-12T10:00:00Z", "TargetUserName": "Administrator", "IpAddress": "185.220.101.5", "IpPort": "44001", "LogonType": 10, "Status": "0xC000006D", "WorkstationName": "TOR", "TargetLogonId": "0x0", "SubjectUserName": "-"},
+    {"EventID": 4625, "TimeCreated": "2026-08-12T10:00:20Z", "TargetUserName": "Administrator", "IpAddress": "185.220.101.5", "IpPort": "44002", "LogonType": 10, "Status": "0xC000006D", "WorkstationName": "TOR", "TargetLogonId": "0x0", "SubjectUserName": "-"},
+    {"EventID": 4625, "TimeCreated": "2026-08-12T10:00:40Z", "TargetUserName": "Administrator", "IpAddress": "185.220.101.5", "IpPort": "44003", "LogonType": 10, "Status": "0xC000006D", "WorkstationName": "TOR", "TargetLogonId": "0x0", "SubjectUserName": "-"},
+    {"EventID": 4625, "TimeCreated": "2026-08-12T10:01:00Z", "TargetUserName": "Administrator", "IpAddress": "185.220.101.5", "IpPort": "44004", "LogonType": 10, "Status": "0xC000006D", "WorkstationName": "TOR", "TargetLogonId": "0x0", "SubjectUserName": "-"},
+    {"EventID": 4625, "TimeCreated": "2026-08-12T10:01:20Z", "TargetUserName": "Administrator", "IpAddress": "185.220.101.5", "IpPort": "44005", "LogonType": 10, "Status": "0xC000006D", "WorkstationName": "TOR", "TargetLogonId": "0x0", "SubjectUserName": "-"},
+    {"EventID": 4625, "TimeCreated": "2026-08-12T10:01:40Z", "TargetUserName": "Administrator", "IpAddress": "185.220.101.5", "IpPort": "44006", "LogonType": 10, "Status": "0xC000006D", "WorkstationName": "TOR", "TargetLogonId": "0x0", "SubjectUserName": "-"}
+  ]
+}

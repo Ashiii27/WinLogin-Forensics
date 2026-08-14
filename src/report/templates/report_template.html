@@ -6,7 +6,7 @@
   <title>Forensic Report — {{ case.case_number }}</title>
   <style>
     :root {
-      --primary: #1e3a5f;
+      --primary: #0f2744;
       --accent: #2563eb;
       --high: #dc2626;
       --medium: #d97706;
@@ -19,144 +19,50 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      font-size: 11pt;
-      line-height: 1.55;
-      color: var(--text);
-      background: #fff;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 24px 32px;
+      font-size: 11pt; line-height: 1.55; color: var(--text);
+      background: #fff; max-width: 1100px; margin: 0 auto; padding: 24px 32px;
     }
-    header.report-header {
-      border-bottom: 3px solid var(--primary);
-      padding-bottom: 20px;
-      margin-bottom: 28px;
-    }
-    header.report-header h1 {
-      font-size: 22pt;
-      color: var(--primary);
-      margin-bottom: 4px;
-    }
-    header.report-header .subtitle {
-      color: var(--muted);
-      font-size: 10pt;
-    }
+    header.report-header { border-bottom: 3px solid var(--primary); padding-bottom: 20px; margin-bottom: 28px; }
+    header.report-header h1 { font-size: 22pt; color: var(--primary); margin-bottom: 4px; }
+    header.report-header .subtitle { color: var(--muted); font-size: 10pt; }
     header.report-header .meta-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 8px 24px;
-      margin-top: 16px;
-      font-size: 9.5pt;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px 24px; margin-top: 16px; font-size: 9.5pt;
     }
     header.report-header .meta-grid span.label { color: var(--muted); }
-    section {
-      margin-bottom: 32px;
-      page-break-inside: avoid;
-    }
-    h2 {
-      font-size: 14pt;
-      color: var(--primary);
-      border-left: 4px solid var(--accent);
-      padding-left: 10px;
-      margin-bottom: 14px;
-    }
-    h3 {
-      font-size: 11pt;
-      color: var(--primary);
-      margin: 16px 0 8px;
-    }
+    section { margin-bottom: 32px; page-break-inside: avoid; }
+    h2 { font-size: 14pt; color: var(--primary); border-left: 4px solid var(--accent); padding-left: 10px; margin-bottom: 14px; }
+    h3 { font-size: 11pt; color: var(--primary); margin: 16px 0 8px; }
     p, li { margin-bottom: 6px; }
     ul { padding-left: 20px; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 9pt;
-      margin-bottom: 12px;
-    }
-    th, td {
-      border: 1px solid var(--border);
-      padding: 6px 8px;
-      text-align: left;
-      vertical-align: top;
-    }
-    th {
-      background: var(--primary);
-      color: #fff;
-      font-weight: 600;
-    }
+    table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 12px; }
+    th, td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background: var(--primary); color: #fff; font-weight: 600; }
     tr:nth-child(even) { background: var(--bg); }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 8pt;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 8pt; font-weight: 600; text-transform: uppercase; }
     .badge-high { background: #fee2e2; color: var(--high); }
     .badge-medium { background: #fef3c7; color: var(--medium); }
     .badge-low { background: #ecfccb; color: var(--low); }
     .badge-detected { background: #dcfce7; color: #166534; }
     .badge-not-detected { background: #f1f5f9; color: var(--muted); }
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .stat-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 12px;
-      text-align: center;
-    }
-    .stat-card .value {
-      font-size: 18pt;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    .stat-card .label {
-      font-size: 8.5pt;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px; text-align: center; }
+    .stat-card .value { font-size: 18pt; font-weight: 700; color: var(--primary); }
+    .stat-card .label { font-size: 8.5pt; color: var(--muted); margin-top: 2px; }
     .coc-block, .integrity-block {
-      background: #f1f5f9;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 14px 16px;
-      font-family: "Consolas", "Courier New", monospace;
-      font-size: 8.5pt;
-      word-break: break-all;
+      background: #f1f5f9; border: 1px solid var(--border); border-radius: 6px;
+      padding: 14px 16px; font-family: Consolas, "Courier New", monospace; font-size: 8.5pt; word-break: break-all;
     }
     .hash { font-size: 8pt; color: var(--muted); }
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    @media print {
-      body { padding: 0; }
-      section { page-break-inside: avoid; }
-    }
-    @media (max-width: 768px) {
-      .two-col { grid-template-columns: 1fr; }
-    }
-    footer {
-      margin-top: 40px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      font-size: 8pt;
-      color: var(--muted);
-      text-align: center;
-    }
-    .timeline-container { margin: 12px 0; overflow-x: auto; }
+    footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 8pt; color: var(--muted); text-align: center; }
     .note { font-size: 9pt; color: var(--muted); font-style: italic; }
+    .heatmap { display: flex; flex-wrap: wrap; gap: 6px; }
+    .heat-cell { padding: 6px 8px; border-radius: 4px; font-size: 8pt; border: 1px solid var(--border); }
+    .heat-on { background: #fecaca; }
+    .heat-off { background: #f1f5f9; color: var(--muted); }
   </style>
 </head>
 <body>
-  <!-- Header -->
   <header class="report-header">
     <h1>{{ tool_name }} — Forensic Analysis Report</h1>
     <p class="subtitle">Generated {{ generated_at }} · Tool version {{ tool_version }}</p>
@@ -170,5 +76,228 @@
       <div><span class="label">Event Time Range:</span> {{ time_range.start }} — {{ time_range.end }}</div>
     </div>
   </header>
-  <!-- 1. Chain of Custody -->
+
+  <section id="executive-summary">
+    <h2>Executive Summary</h2>
+    <ul>
+      {% for bullet in executive_summary %}
+      <li>{{ bullet }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section id="event-statistics">
+    <h2>Event Statistics</h2>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="value">{{ event_stats.total }}</div><div class="label">Events</div></div>
+      <div class="stat-card"><div class="value">{{ session_stats.total }}</div><div class="label">Sessions</div></div>
+      <div class="stat-card"><div class="value">{{ session_stats.orphaned }}</div><div class="label">Orphaned</div></div>
+      <div class="stat-card"><div class="value">{{ anomaly_count }}</div><div class="label">Anomalies</div></div>
+    </div>
+    {% if event_stats.by_event_id %}
+    <h3>By Event ID</h3>
+    <table>
+      <thead><tr><th>Event ID</th><th>Count</th></tr></thead>
+      <tbody>
+        {% for row in event_stats.by_event_id %}
+        <tr><td>{{ row.EventID }}</td><td>{{ row.count }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </section>
+
+  <section id="session-timeline">
+    <h2>Session Timeline</h2>
+    {% if sessions %}
+    <table>
+      <thead>
+        <tr><th>Session</th><th>User</th><th>Type</th><th>IP</th><th>Logon</th><th>Logoff</th><th>Duration</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td>{{ s.SessionID }}</td>
+          <td>{{ s.Username }}</td>
+          <td>{{ s.LogonTypeName }}</td>
+          <td>{{ s.IpAddress }}</td>
+          <td>{{ s.StartTime }}</td>
+          <td>{{ s.EndTime }}</td>
+          <td>{{ s.DurationFormatted }}</td>
+          <td>{{ s.Status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="note">No sessions reconstructed.</p>
+    {% endif %}
+    {% if timeline_html %}
+    <div class="timeline-container">{{ timeline_html | safe }}</div>
+    {% endif %}
+  </section>
+
+  <section id="anomalies">
+    <h2>Anomaly Table (with SHAP explanations)</h2>
+    {% if anomalies %}
+    <table>
+      <thead>
+        <tr><th>Time</th><th>Finding</th><th>Severity</th><th>MITRE</th><th>Details</th><th>SHAP</th></tr>
+      </thead>
+      <tbody>
+        {% for a in anomalies %}
+        <tr>
+          <td>{{ a.timestamp }}</td>
+          <td>{{ a.anomaly }}</td>
+          <td><span class="badge badge-{{ a.severity | lower }}">{{ a.severity }}</span></td>
+          <td>{{ a.mitre_id }}</td>
+          <td>{{ a.details }}</td>
+          <td class="hash">
+            {% if a.shap %}
+              {% if a.shap is mapping %}
+                {% for k, v in a.shap.items() %}{{ k }}={{ v }}{% if not loop.last %}; {% endif %}{% endfor %}
+              {% else %}{{ a.shap }}{% endif %}
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="note">No anomalies flagged.</p>
+    {% endif %}
+  </section>
+
+  <section id="attack-matrix">
+    <h2>MITRE ATT&amp;CK Heatmap</h2>
+    <p class="note">Coverage: {{ mitre_stats.techniques_detected }} / {{ mitre_stats.total_techniques_tracked }}
+      ({{ mitre_stats.coverage_percent }}%)</p>
+    <div class="heatmap">
+      {% for row in mitre_matrix %}
+      <div class="heat-cell {% if row.detected %}heat-on{% else %}heat-off{% endif %}">
+        <strong>{{ row.mitre_id }}</strong> {{ row.name }}
+        {% if row.detected %}×{{ row.count }}{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="anti-forensic">
+    <h2>Anti-Forensic Findings</h2>
+    {% if antiforensic %}
+    <table>
+      <thead><tr><th>Type</th><th>Event</th><th>Time</th><th>Severity</th><th>Evidence</th></tr></thead>
+      <tbody>
+        {% for f in antiforensic %}
+        <tr>
+          <td>{{ f.detection_type or f.anomaly }}</td>
+          <td>{{ f.event_id }}</td>
+          <td>{{ f.timestamp }}</td>
+          <td>{{ f.severity }}</td>
+          <td>{{ f.evidence_detail or f.details }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="note">No anti-forensic artefacts detected.</p>
+    {% endif %}
+  </section>
+
+  <section id="registry">
+    <h2>Registry Artifacts</h2>
+    {% if registry.sam %}
+    <h3>SAM Accounts</h3>
+    <table>
+      <thead><tr><th>RID</th><th>Username</th><th>Last Logon</th><th>Login Count</th><th>Enabled</th></tr></thead>
+      <tbody>
+        {% for a in registry.sam %}
+        <tr><td>{{ a.RID }}</td><td>{{ a.Username }}</td><td>{{ a.LastLogon }}</td><td>{{ a.LoginCount }}</td><td>{{ a.Enabled }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {% if registry.run_keys %}
+    <h3>Run Keys</h3>
+    <table>
+      <thead><tr><th>Key</th><th>Name</th><th>Command</th><th>Suspicious</th></tr></thead>
+      <tbody>
+        {% for k in registry.run_keys %}
+        <tr><td>{{ k.KeyPath }}</td><td>{{ k.ValueName }}</td><td>{{ k.Command }}</td><td>{{ k.Suspicious }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {% if registry.userassist %}
+    <h3>UserAssist</h3>
+    <table>
+      <thead><tr><th>Decoded Path</th><th>Run Count</th><th>Last Executed</th></tr></thead>
+      <tbody>
+        {% for u in registry.userassist %}
+        <tr><td>{{ u.DecodedPath }}</td><td>{{ u.RunCount }}</td><td>{{ u.LastExecuted }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+    {% if not registry %}
+    <p class="note">No registry artefacts supplied for this case.</p>
+    {% endif %}
+  </section>
+
   <section id="chain-of-custody">
+    <h2>Chain of Custody</h2>
+    <div class="coc-block">
+      <div>Tool: {{ chain_of_custody.tool_name }} {{ chain_of_custody.tool_version }}</div>
+      <div>Operator: {{ chain_of_custody.operator }} @ {{ chain_of_custody.hostname }}</div>
+      <div>Started: {{ chain_of_custody.started_at }}</div>
+      <div>Command: {{ chain_of_custody.command_line }}</div>
+      <div>Source files: {{ chain_of_custody.source_files | length }}</div>
+      {% for f in chain_of_custody.source_files %}
+      <div class="hash">{{ f.filename }} — {{ f.sha256 }}</div>
+      {% endfor %}
+      <div>Actions: {{ chain_of_custody.actions | length if chain_of_custody.actions else 0 }}</div>
+    </div>
+  </section>
+
+  <section id="integrity">
+    <h2>Report Integrity</h2>
+    <div class="integrity-block">
+      <div>SHA-256: {{ integrity.sha256 }}</div>
+      <div>Signed: {{ integrity.signed }}</div>
+      {% if integrity.signature %}<div>Signature: {{ integrity.signature }}</div>{% endif %}
+      <div>Timestamped: {{ integrity.timestamped }}</div>
+      {% if integrity.timestamp_token %}<div>TSA token: {{ integrity.timestamp_token }}</div>{% endif %}
+      <div>Generated: {{ integrity.generated_at }}</div>
+    </div>
+  </section>
+
+  <section id="events-table">
+    <h2>Event Table (first {{ events_display_limit }} of {{ events_total }})</h2>
+    {% if events %}
+    <table>
+      <thead>
+        <tr>
+          {% for col in events[0].keys() %}<th>{{ col }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for ev in events %}
+        <tr>{% for col in ev.keys() %}<td>{{ ev[col] }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="note">No events in scope.</p>
+    {% endif %}
+  </section>
+
+  {% if appendix_notes %}
+  <section id="appendix"><h2>Appendix</h2><p>{{ appendix_notes }}</p></section>
+  {% endif %}
+
+  <footer>
+    {{ tool_name }} v{{ tool_version }} — generated {{ generated_at }}.
+    Digital signatures provide integrity evidence; they do not constitute legal chain-of-custody under any specific jurisdiction.
+  </footer>
+</body>
+</html>

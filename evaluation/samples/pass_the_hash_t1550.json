@@ -1,0 +1,10 @@
+{
+  "name": "pass_the_hash_t1550",
+  "source": "synthetic-atomic-red-team-T1550.002",
+  "ground_truth": [
+    {"rule": "Pass-the-Hash pattern", "technique_id": "T1550.002", "present": true}
+  ],
+  "events": [
+    {"EventID": 4648, "TimeCreated": "2026-08-12T11:05:00Z", "SubjectUserName": "Administrator", "TargetUserName": "Administrator", "IpAddress": "10.0.0.15", "IpPort": "445", "WorkstationName": "WS01", "TargetLogonId": "0x55aa", "LogonType": 9, "Status": "0x0"}
+  ]
+}

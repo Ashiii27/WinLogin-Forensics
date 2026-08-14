@@ -1,0 +1,11 @@
+{
+  "name": "benign_baseline",
+  "source": "synthetic-benign",
+  "ground_truth": [],
+  "events": [
+    {"EventID": 4624, "TimeCreated": "2026-08-12T09:00:00Z", "TargetUserName": "Ashish", "TargetLogonId": "0x1001", "LogonType": 2, "IpAddress": "192.168.1.50", "IpPort": "0", "WorkstationName": "WS07", "SubjectUserName": "WS07$", "Status": "0x0", "TargetDomainName": "CORP"},
+    {"EventID": 4634, "TimeCreated": "2026-08-12T17:00:00Z", "TargetUserName": "Ashish", "TargetLogonId": "0x1001", "LogonType": 2, "IpAddress": "-", "IpPort": "-", "WorkstationName": "WS07", "SubjectUserName": "-", "Status": "0x0", "TargetDomainName": "CORP"},
+    {"EventID": 4624, "TimeCreated": "2026-08-12T09:05:00Z", "TargetUserName": "Priya", "TargetLogonId": "0x1002", "LogonType": 2, "IpAddress": "192.168.1.51", "IpPort": "0", "WorkstationName": "WS08", "SubjectUserName": "WS08$", "Status": "0x0", "TargetDomainName": "CORP"},
+    {"EventID": 4647, "TimeCreated": "2026-08-12T16:30:00Z", "TargetUserName": "Priya", "TargetLogonId": "0x1002", "LogonType": 2, "IpAddress": "-", "IpPort": "-", "WorkstationName": "WS08", "SubjectUserName": "Priya", "Status": "0x0", "TargetDomainName": "CORP"}
+  ]
+}

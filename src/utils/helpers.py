@@ -1,4 +1,4 @@
-﻿"""
+"""
 WinLogin Forensics - Shared helpers
 ===================================
 Logon-type names, ROT13 (UserAssist), hashing, and safe coercions.

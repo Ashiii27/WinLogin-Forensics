@@ -1,0 +1,20 @@
+[
+  {
+    "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+    "ValueName": "SecurityHealth",
+    "Command": "%SystemRoot%\\system32\\SecurityHealthSystray.exe",
+    "Suspicious": false
+  },
+  {
+    "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+    "ValueName": "AnyDesk",
+    "Command": "C:\\Program Files (x86)\\AnyDesk\\AnyDesk.exe --service",
+    "Suspicious": true
+  },
+  {
+    "KeyPath": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+    "ValueName": "TeamViewer",
+    "Command": "C:\\Program Files\\TeamViewer\\TeamViewer.exe",
+    "Suspicious": true
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "name": "closed_session_ok",
+  "source": "synthetic-benign-rdp",
+  "ground_truth": [],
+  "events": [
+    {"EventID": 4624, "TimeCreated": "2026-08-12T13:00:00Z", "TargetUserName": "helpdesk", "TargetLogonId": "0x3333", "LogonType": 10, "IpAddress": "192.168.1.80", "IpPort": "3389", "WorkstationName": "JUMP", "SubjectUserName": "JUMP$", "Status": "0x0", "TargetDomainName": "CORP"},
+    {"EventID": 4634, "TimeCreated": "2026-08-12T13:45:00Z", "TargetUserName": "helpdesk", "TargetLogonId": "0x3333", "LogonType": 10, "IpAddress": "-", "IpPort": "-", "WorkstationName": "JUMP", "SubjectUserName": "-", "Status": "0x0", "TargetDomainName": "CORP"}
+  ]
+}

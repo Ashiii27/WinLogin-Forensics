@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Events>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4624</EventID>
+    <TimeCreated SystemTime="2026-08-12T11:45:00.0000000Z"/>
+    <EventRecordID>1001</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>WORKSTATION-07</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">WORKSTATION-07$</Data>
+    <Data Name="TargetUserName">Ashish</Data>
+    <Data Name="TargetDomainName">CORP</Data>
+    <Data Name="TargetLogonId">0x1a2b3c</Data>
+    <Data Name="LogonType">2</Data>
+    <Data Name="IpAddress">192.168.1.50</Data>
+    <Data Name="IpPort">49821</Data>
+    <Data Name="WorkstationName">WORKSTATION-07</Data>
+    <Data Name="Status">0x0</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4625</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:14:01.0000000Z"/>
+    <EventRecordID>900</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">-</Data>
+    <Data Name="TargetUserName">Administrator</Data>
+    <Data Name="TargetDomainName">CORP</Data>
+    <Data Name="TargetLogonId">0x0</Data>
+    <Data Name="LogonType">10</Data>
+    <Data Name="IpAddress">185.220.101.5</Data>
+    <Data Name="IpPort">44312</Data>
+    <Data Name="WorkstationName">TOR-EXIT</Data>
+    <Data Name="Status">0xC000006D</Data>
+    <Data Name="SubStatus">0xC000006A</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4634</EventID>
+    <TimeCreated SystemTime="2026-08-12T18:10:00.0000000Z"/>
+    <EventRecordID>1400</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>WORKSTATION-07</Computer>
+  </System>
+  <EventData>
+    <Data Name="TargetUserName">Ashish</Data>
+    <Data Name="TargetDomainName">CORP</Data>
+    <Data Name="TargetLogonId">0x1a2b3c</Data>
+    <Data Name="LogonType">2</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4647</EventID>
+    <TimeCreated SystemTime="2026-08-12T12:00:00.0000000Z"/>
+    <EventRecordID>1100</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>WORKSTATION-07</Computer>
+  </System>
+  <EventData>
+    <Data Name="TargetUserName">Ashish</Data>
+    <Data Name="TargetLogonId">0x99aa</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4648</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:19:00.0000000Z"/>
+    <EventRecordID>1010</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">Administrator</Data>
+    <Data Name="TargetServerName">FILESERVER</Data>
+    <Data Name="TargetLogonId">0x55aa</Data>
+    <Data Name="IpAddress">185.220.101.5</Data>
+    <Data Name="IpPort">445</Data>
+    <Data Name="ProcessName">C:\Windows\System32\lsass.exe</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4672</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:18:05.0000000Z"/>
+    <EventRecordID>1005</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">Administrator</Data>
+    <Data Name="TargetLogonId">0xdeadbeef</Data>
+    <Data Name="PrivilegeList">SeDebugPrivilege SeImpersonatePrivilege SeTcbPrivilege</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4720</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:28:00.0000000Z"/>
+    <EventRecordID>1020</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">support_tmp</Data>
+    <Data Name="TargetDomainName">CORP</Data>
+    <Data Name="SamAccountName">support_tmp</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4722</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:28:05.0000000Z"/>
+    <EventRecordID>1021</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">support_tmp</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4723</EventID>
+    <TimeCreated SystemTime="2026-08-12T09:00:00.0000000Z"/>
+    <EventRecordID>1300</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Ashish</Data>
+    <Data Name="TargetUserName">Ashish</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4724</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:28:10.0000000Z"/>
+    <EventRecordID>1022</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">support_tmp</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4725</EventID>
+    <TimeCreated SystemTime="2026-08-11T16:00:00.0000000Z"/>
+    <EventRecordID>800</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">intern01</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4726</EventID>
+    <TimeCreated SystemTime="2026-08-11T16:05:00.0000000Z"/>
+    <EventRecordID>801</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">intern01</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4728</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:29:00.0000000Z"/>
+    <EventRecordID>1023</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">Domain Admins</Data>
+    <Data Name="MemberName">support_tmp</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4732</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:29:05.0000000Z"/>
+    <EventRecordID>1024</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">Administrators</Data>
+    <Data Name="MemberName">CORP\support_tmp</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4740</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:17:50.0000000Z"/>
+    <EventRecordID>990</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="TargetUserName">guest_try</Data>
+    <Data Name="TargetDomainName">CORP</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4756</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:29:10.0000000Z"/>
+    <EventRecordID>1025</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">Enterprise Admins</Data>
+    <Data Name="MemberName">support_tmp</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4767</EventID>
+    <TimeCreated SystemTime="2026-08-12T10:00:00.0000000Z"/>
+    <EventRecordID>1350</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TargetUserName">guest_try</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4768</EventID>
+    <TimeCreated SystemTime="2026-08-12T09:15:00.0000000Z"/>
+    <EventRecordID>1310</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="TargetUserName">Ashish</Data>
+    <Data Name="ServiceName">krbtgt</Data>
+    <Data Name="IpAddress">192.168.1.50</Data>
+    <Data Name="Status">0x0</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4769</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:22:00.0000000Z"/>
+    <EventRecordID>1015</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="TargetUserName">Administrator</Data>
+    <Data Name="ServiceName">MSSQLSvc/sql.corp.local</Data>
+    <Data Name="TicketEncryptionType">0x17</Data>
+    <Data Name="IpAddress">185.220.101.5</Data>
+    <Data Name="Status">0x0</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4771</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:21:30.0000000Z"/>
+    <EventRecordID>1014</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="TargetUserName">krbtgt_no_preauth</Data>
+    <Data Name="Status">0x18</Data>
+    <Data Name="IpAddress">185.220.101.5</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4776</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:19:30.0000000Z"/>
+    <EventRecordID>1012</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="TargetUserName">Administrator</Data>
+    <Data Name="Workstation">FILESERVER</Data>
+    <Data Name="Status">0x0</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4698</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:25:00.0000000Z"/>
+    <EventRecordID>1018</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="TaskName">\Microsoft\Windows\UpdateCheck</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Service Control Manager"/>
+    <EventID>7045</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:26:00.0000000Z"/>
+    <EventRecordID>220</EventRecordID>
+    <Channel>System</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="ServiceName">WinUpdateHelper</Data>
+    <Data Name="ImagePath">C:\ProgramData\WinUpdateHelper.exe</Data>
+    <Data Name="ServiceType">user mode service</Data>
+    <Data Name="StartType">auto start</Data>
+  </EventData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Eventlog"/>
+    <EventID>1102</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:40:00.0000000Z"/>
+    <EventRecordID>1050</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <UserData>
+    <LogFileCleared>
+      <SubjectUserName>Administrator</SubjectUserName>
+      <SubjectDomainName>CORP</SubjectDomainName>
+      <SubjectUserSid>S-1-5-21-1000-1001-1002-500</SubjectUserSid>
+    </LogFileCleared>
+  </UserData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Eventlog"/>
+    <EventID>104</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:40:05.0000000Z"/>
+    <EventRecordID>221</EventRecordID>
+    <Channel>System</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <UserData>
+    <LogFileCleared>
+      <SubjectUserName>Administrator</SubjectUserName>
+      <SubjectUserSid>S-1-5-21-1000-1001-1002-500</SubjectUserSid>
+    </LogFileCleared>
+  </UserData>
+</Event>
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Security-Auditing"/>
+    <EventID>4616</EventID>
+    <TimeCreated SystemTime="2026-08-12T02:39:00.0000000Z"/>
+    <EventRecordID>1048</EventRecordID>
+    <Channel>Security</Channel>
+    <Computer>CORP-DC01</Computer>
+  </System>
+  <EventData>
+    <Data Name="SubjectUserName">Administrator</Data>
+    <Data Name="PreviousTime">2026-08-12T02:39:00.0000000Z</Data>
+    <Data Name="NewTime">2026-08-11T02:39:00.0000000Z</Data>
+    <Data Name="ProcessName">C:\Windows\System32\cmd.exe</Data>
+  </EventData>
+</Event>
+</Events>

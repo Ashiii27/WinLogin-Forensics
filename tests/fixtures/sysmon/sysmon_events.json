@@ -1,0 +1,44 @@
+{
+  "events": [
+    {
+      "EventID": 1,
+      "UtcTime": "2026-08-12T11:21:00Z",
+      "TimeCreated": "2026-08-12T11:21:00Z",
+      "ProcessId": "4124",
+      "ParentProcessId": "880",
+      "CommandLine": "cmd.exe /c whoami /priv",
+      "User": "CORP\\Administrator",
+      "Hashes": "SHA256=aaaaaaaa",
+      "Image": "C:\\\\Windows\\\\System32\\\\cmd.exe",
+      "ParentImage": "C:\\\\Windows\\\\explorer.exe"
+    },
+    {
+      "EventID": 3,
+      "UtcTime": "2026-08-12T11:21:30Z",
+      "TimeCreated": "2026-08-12T11:21:30Z",
+      "ProcessId": "4124",
+      "DestinationIp": "185.220.101.5",
+      "DestinationPort": "443",
+      "Protocol": "tcp",
+      "User": "CORP\\Administrator"
+    },
+    {
+      "EventID": 11,
+      "UtcTime": "2026-08-12T11:21:40Z",
+      "TimeCreated": "2026-08-12T11:21:40Z",
+      "ProcessId": "4124",
+      "TargetFilename": "C:\\\\Users\\\\Administrator\\\\AppData\\\\Local\\\\Temp\\\\payload.exe",
+      "CreationUtcTime": "2026-08-12T11:21:40Z",
+      "User": "CORP\\Administrator"
+    },
+    {
+      "EventID": 22,
+      "UtcTime": "2026-08-12T11:21:50Z",
+      "TimeCreated": "2026-08-12T11:21:50Z",
+      "ProcessId": "4124",
+      "QueryName": "c2.badactor.example",
+      "QueryResults": "185.220.101.5",
+      "User": "CORP\\Administrator"
+    }
+  ]
+}

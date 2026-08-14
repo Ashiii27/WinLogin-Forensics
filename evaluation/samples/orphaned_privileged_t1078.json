@@ -1,0 +1,12 @@
+{
+  "name": "orphaned_privileged_t1078",
+  "source": "synthetic-atomic-red-team-T1078",
+  "ground_truth": [
+    {"rule": "Orphaned privileged session", "technique_id": "T1078", "present": true},
+    {"rule": "Admin Privilege Escalation", "technique_id": "T1078.002", "present": true}
+  ],
+  "events": [
+    {"EventID": 4624, "TimeCreated": "2026-08-12T11:20:00Z", "TargetUserName": "Administrator", "TargetLogonId": "0xdeadbeef", "LogonType": 10, "IpAddress": "10.0.0.15", "IpPort": "3389", "WorkstationName": "DC01", "SubjectUserName": "DC01$", "Status": "0x0", "TargetDomainName": "CORP"},
+    {"EventID": 4672, "TimeCreated": "2026-08-12T11:20:01Z", "TargetUserName": "Administrator", "SubjectUserName": "Administrator", "TargetLogonId": "0xdeadbeef", "PrivilegeList": "SeDebugPrivilege", "IpAddress": "-", "IpPort": "-", "WorkstationName": "DC01", "Status": "-", "LogonType": -1}
+  ]
+}

@@ -1,4 +1,4 @@
-﻿"""
+"""
 WinLogin Forensics - Parsers Package
 """
 from .evtx_parser import EvtxParser, SUPPORTED_EVENT_IDS, EVENT_SCHEMA, parse_evtx

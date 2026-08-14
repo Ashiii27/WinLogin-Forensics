@@ -1,2 +1,1 @@
-﻿# __init__.py
-# UI package init
+"""WinLogin Forensics - Streamlit UI package."""

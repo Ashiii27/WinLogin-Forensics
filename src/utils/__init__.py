@@ -1,4 +1,4 @@
-﻿"""WinLogin Forensics - Utilities package."""
+"""WinLogin Forensics - Utilities package."""
 
 from .helpers import (
     LOGON_TYPE_NAMES,

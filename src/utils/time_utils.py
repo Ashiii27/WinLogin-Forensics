@@ -1,4 +1,4 @@
-﻿"""
+"""
 WinLogin Forensics - Time utilities
 ===================================
 Timezone normalisation, Windows FILETIME conversion, and duration helpers.

@@ -1,0 +1,176 @@
+{
+  "n_samples": 6,
+  "n_splits": 8,
+  "seed": 42,
+  "overall": {
+    "precision": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "recall": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "f1": {
+      "mean": 1.0,
+      "std": 0.0
+    }
+  },
+  "folds": [
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "n": 5
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "n": 5
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "n": 5
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "n": 5
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "n": 5
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "n": 5
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "n": 5
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "n": 5
+    }
+  ],
+  "per_sample": [
+    {
+      "name": "benign_baseline",
+      "source": "synthetic-benign",
+      "predicted": [],
+      "truth": [],
+      "tp": [],
+      "fp": [],
+      "fn": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "session_count": 2
+    },
+    {
+      "name": "brute_force_t1110",
+      "source": "synthetic-atomic-red-team-T1110.001",
+      "predicted": [
+        "T1110.001"
+      ],
+      "truth": [
+        "T1110.001"
+      ],
+      "tp": [
+        "T1110.001"
+      ],
+      "fp": [],
+      "fn": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "session_count": 0
+    },
+    {
+      "name": "closed_session_ok",
+      "source": "synthetic-benign-rdp",
+      "predicted": [],
+      "truth": [],
+      "tp": [],
+      "fp": [],
+      "fn": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "session_count": 1
+    },
+    {
+      "name": "kerberoasting_t1558",
+      "source": "synthetic-EVTX-ATTACK-SAMPLES-T1558.003",
+      "predicted": [
+        "T1558.003"
+      ],
+      "truth": [
+        "T1558.003"
+      ],
+      "tp": [
+        "T1558.003"
+      ],
+      "fp": [],
+      "fn": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "session_count": 0
+    },
+    {
+      "name": "orphaned_privileged_t1078",
+      "source": "synthetic-atomic-red-team-T1078",
+      "predicted": [
+        "T1078",
+        "T1078.002"
+      ],
+      "truth": [
+        "T1078",
+        "T1078.002"
+      ],
+      "tp": [
+        "T1078",
+        "T1078.002"
+      ],
+      "fp": [],
+      "fn": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "session_count": 1
+    },
+    {
+      "name": "pass_the_hash_t1550",
+      "source": "synthetic-atomic-red-team-T1550.002",
+      "predicted": [
+        "T1550.002"
+      ],
+      "truth": [
+        "T1550.002"
+      ],
+      "tp": [
+        "T1550.002"
+      ],
+      "fp": [],
+      "fn": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "session_count": 0
+    }
+  ]
+}

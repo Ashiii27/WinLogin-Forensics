@@ -1,4 +1,3 @@
-# TODO: Phase 1 — Parse EVTX samples from Win10/11/Server 2016-2022 to confirm schema differences
 #!/usr/bin/env python3
 """
 Confirm EVTX schema differences across Windows 10/11/Server exports still parse.

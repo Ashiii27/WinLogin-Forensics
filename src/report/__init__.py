@@ -1,4 +1,4 @@
-﻿"""
+"""
 WinLogin Forensics - Report Generation Package
 =====================================================
 HTML and PDF forensic report generation with MITRE ATT&CK mapping,
@@ -7,8 +7,11 @@ chain-of-custody logging, and report integrity (SHA-256, signing, RFC 3161).
 
 from .mitre_mapper import (
     MITRE_TECHNIQUES,
+    MITRE_EVENT_RULES,
     DETECTION_TO_MITRE,
     lookup_technique,
+    lookup_technique_id,
+    lookup_rule,
     resolve_mitre_id,
     build_coverage_matrix,
     coverage_summary,

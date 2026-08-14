@@ -1,0 +1,10 @@
+{
+  "name": "kerberoasting_t1558",
+  "source": "synthetic-EVTX-ATTACK-SAMPLES-T1558.003",
+  "ground_truth": [
+    {"rule": "Kerberoasting (4769)", "technique_id": "T1558.003", "present": true}
+  ],
+  "events": [
+    {"EventID": 4769, "TimeCreated": "2026-08-12T11:10:00Z", "TargetUserName": "Administrator", "ServiceName": "MSSQLSvc/sql.corp.local", "TicketEncryptionType": "0x17", "IpAddress": "10.0.0.15", "Status": "0x0", "TargetLogonId": "-", "SubjectUserName": "-", "LogonType": -1, "WorkstationName": "DC01", "IpPort": "-"}
+  ]
+}
