@@ -320,8 +320,10 @@ class HtmlReportGenerator:
             record = {}
             for col in cols:
                 val = row[col]
-                if hasattr(val, "strftime"):
+                if hasattr(val, "strftime") and not pd.isna(val):
                     val = val.strftime("%Y-%m-%d %H:%M:%S UTC")
+                elif pd.isna(val):
+                    val = "—"
                 elif col == "LogonType" and val is not None and val >= 0:
                     val = LOGON_TYPE_NAMES.get(int(val), val)
                 record[col] = val
@@ -336,10 +338,18 @@ class HtmlReportGenerator:
         for _, row in df.iterrows():
             start = row.get("LogonTime", row.get("StartTime", ""))
             end = row.get("LogoffTime", row.get("EndTime", ""))
-            if hasattr(start, "strftime"):
+            
+            # Format start time
+            if hasattr(start, "strftime") and not pd.isna(start):
                 start = start.strftime("%Y-%m-%d %H:%M:%S UTC")
-            if end is not None and hasattr(end, "strftime"):
+            elif pd.isna(start):
+                start = "—"
+            
+            # Format end time
+            if hasattr(end, "strftime") and not pd.isna(end):
                 end = end.strftime("%Y-%m-%d %H:%M:%S UTC")
+            elif pd.isna(end) or end is None:
+                end = "—"
 
             rows.append({
                 "SessionID": row.get("SessionID", ""),
@@ -348,7 +358,7 @@ class HtmlReportGenerator:
                 "LogonTypeName": row.get("LogonTypeName", ""),
                 "IpAddress": row.get("IpAddress", ""),
                 "StartTime": start,
-                "EndTime": end or "—",
+                "EndTime": end,
                 "DurationFormatted": row.get("DurationFormatted", ""),
                 "Status": row.get("Status", ""),
             })

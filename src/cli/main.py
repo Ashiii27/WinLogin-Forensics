@@ -88,6 +88,7 @@ def _result_to_report_data(result: AnalysisResult) -> ReportData:
 
 
 def _emit_report(result: AnalysisResult, output_dir: Path, fmt: str) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
     data = _result_to_report_data(result)
     if fmt == "json":
         _write_json(
@@ -99,12 +100,26 @@ def _emit_report(result: AnalysisResult, output_dir: Path, fmt: str) -> None:
                 "antiforensic": result.antiforensic,
             },
         )
+        print(f"Report written to {output_dir / 'analysis.json'}")
         return
     if fmt == "html":
-        HtmlReportGenerator().generate_html(data, output_path=output_dir / "report.html")
+        try:
+            html_path = output_dir / "report.html"
+            HtmlReportGenerator().generate_html(data, output_path=html_path)
+            print(f"HTML report written to {html_path}")
+        except Exception as e:
+            print(f"Error generating HTML report: {e}", file=sys.stderr)
+            raise
         return
     if fmt == "pdf":
-        PdfReportGenerator().generate(data, output_dir / "report.pdf", custody=result.custody)
+        try:
+            pdf_path = output_dir / "report.pdf"
+            PdfReportGenerator().generate(data, pdf_path, custody=result.custody)
+            print(f"PDF report written to {pdf_path}")
+        except Exception as e:
+            print(f"Error generating PDF report: {e}", file=sys.stderr)
+            raise
+        return
 
 
 def cmd_parse(args: argparse.Namespace) -> int:
@@ -150,7 +165,6 @@ def cmd_report(args: argparse.Namespace) -> int:
     _emit_report(result, args.output_dir, fmt)
     if result.custody:
         result.custody.save(args.output_dir / "custody_log.json")
-    print(f"Report written to {args.output_dir} ({fmt})")
     return 0
 
 

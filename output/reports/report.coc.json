@@ -1,0 +1,42 @@
+{
+  "tool_name": "WinLogin Forensics",
+  "tool_version": "1.0.0",
+  "started_at": "2026-08-14 20:02:35 UTC",
+  "completed_at": "2026-08-14 20:02:35 UTC",
+  "operator": "Ashish",
+  "hostname": "Ideapad",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "command_line": "src/app.py",
+  "parameters": {},
+  "source_files": [],
+  "output_files": [
+    {
+      "path": "C:\\Users\\Ashish\\Documents\\WinLogin-Forensics\\output\\reports\\report.html",
+      "filename": "report.html",
+      "sha256": "493590976207a7e17ea85ba1dc97aa2ec5e0015b602c382360d0a08011f4393b"
+    }
+  ],
+  "actions": [
+    {
+      "action": "startup",
+      "detail": "Chain of custody initialised",
+      "timestamp": "2026-08-14 20:02:35 UTC",
+      "operator": "Ashish",
+      "signature": "2d2698f825f11de6856d26ab002b838777c83fa7d52681614689f94ba2a3ddf0"
+    },
+    {
+      "action": "output",
+      "detail": "report.html sha256=493590976207a7e17ea85ba1dc97aa2ec5e0015b602c382360d0a08011f4393b",
+      "timestamp": "2026-08-14 20:02:35 UTC",
+      "operator": "Ashish",
+      "signature": "4f31d88a9fc88a4bdf3d18627c46d5d074fda06d3234f00138c48f5c97e7d792"
+    },
+    {
+      "action": "shutdown",
+      "detail": "Chain of custody finalised",
+      "timestamp": "2026-08-14 20:02:35 UTC",
+      "operator": "Ashish",
+      "signature": "6703cbb672ee5c23e73dc6a186af29557e295b858e2c918d154747b3f7822f5d"
+    }
+  ]
+}
