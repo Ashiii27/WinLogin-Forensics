@@ -27,7 +27,11 @@ except Exception:  # pragma: no cover
     GCNConv = None  # type: ignore
 
 
-class _TorchGCN(torch.nn.Module if PYG_AVAILABLE else object):  # type: ignore[misc]
+
+_GCN_BASE = torch.nn.Module if PYG_AVAILABLE and torch is not None else object
+
+
+class _TorchGCN(_GCN_BASE):  # type: ignore[misc]
     """Two-layer GCNConv stack (only constructed when PyG is present)."""
 
     def __init__(self, in_dim: int, hidden: int, out_dim: int):

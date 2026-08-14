@@ -22,10 +22,10 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.live.alert_dispatcher import AlertDispatcher, load_alert_config
-from src.parsers.evtx_parser import EvtxParser
-from src.parsers.session_correlator import SessionCorrelator
-from src.utils.time_utils import normalize_to_utc, time_delta_seconds, utc_now
+from .alert_dispatcher import AlertDispatcher, load_alert_config
+from ..parsers.evtx_parser import EvtxParser
+from ..parsers.session_correlator import SessionCorrelator
+from ..utils.time_utils import normalize_to_utc, time_delta_seconds, utc_now
 
 
 try:

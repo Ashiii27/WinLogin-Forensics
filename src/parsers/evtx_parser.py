@@ -468,14 +468,12 @@ class EvtxParser:
             "Provider": safe_str(provider),
             "TargetDomainName": safe_str(event_data.get("TargetDomainName") or event_data.get("TargetDomain")),
             "SubjectDomainName": safe_str(event_data.get("SubjectDomainName") or event_data.get("SubjectDomain")),
-            "SubjectUserSid": safe_str(event_data.get("SubjectUserSid") or event_data.get("SubjectUserSid")),
+            "SubjectUserSid": safe_str(event_data.get("SubjectUserSid")),
             "TargetUserSid": safe_str(event_data.get("TargetUserSid")),
             "PrivilegeList": safe_str(event_data.get("PrivilegeList")),
             "ServiceName": safe_str(event_data.get("ServiceName") or event_data.get("Service")),
-            "TaskName": safe_str(event_data.get("TaskName") or event_data.get("TaskName")),
-            "TicketEncryptionType": safe_str(
-                event_data.get("TicketEncryptionType") or event_data.get("TicketEncryptionType")
-            ),
+            "TaskName": safe_str(event_data.get("TaskName")),
+            "TicketEncryptionType": safe_str(event_data.get("TicketEncryptionType")),
             "ProcessName": safe_str(
                 event_data.get("ProcessName") or event_data.get("CallerProcessName") or event_data.get("NewProcessName")
             ),

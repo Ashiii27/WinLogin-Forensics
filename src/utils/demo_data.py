@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from src.parsers.evtx_parser import EvtxParser
-from src.parsers.powershell_parser import PowerShellParser
-from src.parsers.registry_parser import RegistryParser
-from src.parsers.sysmon_parser import SysmonParser
+from ..parsers.evtx_parser import EvtxParser
+from ..parsers.powershell_parser import PowerShellParser
+from ..parsers.registry_parser import RegistryParser
+from ..parsers.sysmon_parser import SysmonParser
 
 
 def _e(**kwargs) -> Dict[str, Any]:

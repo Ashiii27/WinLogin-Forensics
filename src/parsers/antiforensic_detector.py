@@ -81,7 +81,7 @@ class AntiForensicDetector:
                 sid = str(row.get("SubjectUserSid"))
             raw = row.get("RawData") if "RawData" in row else {}
             if isinstance(raw, dict):
-                sid = sid if sid != "-" else str(raw.get("SubjectUserSid") or raw.get("SubjectUserSid") or "-")
+                sid = sid if sid != "-" else str(raw.get("SubjectUserSid") or "-")
                 operator = operator if operator not in {"-", None} else raw.get("SubjectUserName", operator)
             findings.append(
                 self._row(

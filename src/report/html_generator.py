@@ -320,9 +320,13 @@ class HtmlReportGenerator:
             record = {}
             for col in cols:
                 val = row[col]
-                if hasattr(val, "strftime") and not pd.isna(val):
+                try:
+                    is_na = pd.isna(val)
+                except (TypeError, ValueError):
+                    is_na = False
+                if hasattr(val, "strftime") and not is_na:
                     val = val.strftime("%Y-%m-%d %H:%M:%S UTC")
-                elif pd.isna(val):
+                elif is_na:
                     val = "—"
                 elif col == "LogonType" and val is not None and val >= 0:
                     val = LOGON_TYPE_NAMES.get(int(val), val)
