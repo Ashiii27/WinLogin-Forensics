@@ -71,6 +71,9 @@ class ReportData:
     parameters: Dict[str, Any] = field(default_factory=dict)
     timeline_html: str = ""
     appendix_notes: str = ""
+    antiforensic: List[Dict[str, Any]] = field(default_factory=list)
+    registry: Dict[str, Any] = field(default_factory=dict)
+    custody: Optional[Any] = None
 
 
 class HtmlReportGenerator:
@@ -126,6 +129,8 @@ class HtmlReportGenerator:
             "source_files": data.source_files,
             "integrity": {},
             "chain_of_custody": {},
+            "antiforensic": data.antiforensic or [],
+            "registry": data.registry or {},
         }
 
     def generate_html(
@@ -219,8 +224,9 @@ class HtmlReportGenerator:
             return {"total": 0, "completed": 0, "orphaned": 0, "avg_duration_seconds": 0}
 
         total = len(df)
-        completed = len(df[df["Status"].astype(str).str.contains("Completed", na=False)]) if "Status" in df.columns else 0
-        orphaned = total - completed
+        status = df["Status"].astype(str).str.lower() if "Status" in df.columns else pd.Series(dtype=str)
+        completed = int(status.str.contains("closed|completed").sum()) if len(status) else 0
+        orphaned = int(status.str.contains("orphan").sum()) if len(status) else max(0, total - completed)
         avg_dur = float(df["DurationSeconds"].mean()) if "DurationSeconds" in df.columns else 0.0
 
         return {
@@ -294,7 +300,7 @@ class HtmlReportGenerator:
                 "details": finding.get("details", ""),
                 "confidence": finding.get("confidence", ""),
                 "event_id": finding.get("event_id", ""),
-                "shap": finding.get("shap", finding.get("shap_values", "")),
+                "shap": finding.get("shap_explanation") or finding.get("shap") or finding.get("shap_values") or {},
             })
         return rows
 
@@ -328,8 +334,8 @@ class HtmlReportGenerator:
 
         rows = []
         for _, row in df.iterrows():
-            start = row.get("StartTime", "")
-            end = row.get("EndTime", "")
+            start = row.get("LogonTime", row.get("StartTime", ""))
+            end = row.get("LogoffTime", row.get("EndTime", ""))
             if hasattr(start, "strftime"):
                 start = start.strftime("%Y-%m-%d %H:%M:%S UTC")
             if end is not None and hasattr(end, "strftime"):
