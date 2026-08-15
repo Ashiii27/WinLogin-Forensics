@@ -14,7 +14,7 @@ from typing import Any, Dict, Iterable, List, Optional
 import pandas as pd
 
 from ..report.mitre_mapper import lookup_technique_id
-from ..utils.helpers import is_system_account, safe_str
+from ..utils.helpers import is_system_account, safe_int, safe_str
 from ..utils.time_utils import is_business_hours, normalize_to_utc
 
 
@@ -82,12 +82,25 @@ class AnomalyDetector:
         findings = []
         df = df.sort_values("TimeCreated")
         # Group by source IP (fallback: workstation)
+        # REPLACE lines 83–124 (the entire for-loop block inside detect_brute_force):
+
         key_col = "IpAddress" if "IpAddress" in df.columns else "WorkstationName"
         window = pd.Timedelta(minutes=self.brute_force_window_minutes)
-        for key, group in df.groupby(key_col):
-            if safe_str(key) in {"-", "", "None"}:
-                # still group by target user if IP missing
-                pass
+
+        # Build groups: primary key is IP, fallback to TargetUserName for unknown IPs
+        groups = []
+        unknown_ip = df[df[key_col].apply(lambda v: safe_str(v) in {"-", "", "None"})]
+        known_ip = df[~df[key_col].apply(lambda v: safe_str(v) in {"-", "", "None"})]
+
+        for key, group in known_ip.groupby(key_col):
+            groups.append((f"IP:{key}", group))
+
+        if not unknown_ip.empty and "TargetUserName" in unknown_ip.columns:
+            for user, ugroup in unknown_ip.groupby("TargetUserName"):
+                if safe_str(user) not in {"-", "", "None"}:
+                    groups.append((f"user:{user}(unknown-IP)", ugroup))
+
+        for key, group in groups:
             times = list(group["TimeCreated"])
             users = list(group.get("TargetUserName", pd.Series(["-"] * len(group))))
             i = 0
@@ -111,22 +124,26 @@ class AnomalyDetector:
                             rule="Repeated 4625",
                         )
                     )
-        # Dedup: keep one finding per key
-        seen = set()
-        uniq_f = []
-        for f in findings:
-            sig = (f["details"][:40], str(f["timestamp"]))
-            if sig in seen:
-                continue
-            seen.add(sig)
-            uniq_f.append(f)
-        return uniq_f
 
+    
     def detect_pass_the_hash(self) -> List[Dict[str, Any]]:
-        """Flag explicit-credential use (4648) and Type-3 NTLM patterns."""
+        """Flag explicit-credential use (4648) with NTLM network logon patterns."""
         findings = []
         df = self._eid(4648)
         for _, row in df.iterrows():
+            raw = row.get("RawData") if "RawData" in df.columns else {}
+            if not isinstance(raw, dict):
+                raw = {}
+            auth_pkg = str(
+                row.get("AuthenticationPackageName") or raw.get("AuthenticationPackageName") or ""
+            ).upper()
+            logon_type = safe_int(row.get("LogonType"), default=-1)
+            # PtH signature: Network logon (type 3 or 9) + NTLM auth package
+            # Type 2 RunAs and type 5 service starts are common false-positive sources
+            if logon_type not in {3, 9}:
+                continue
+            if auth_pkg and "NTLM" not in auth_pkg and auth_pkg not in {"", "-"}:
+                continue
             findings.append(
                 self._finding(
                     "Pass-the-Hash / Explicit Credential",
@@ -135,7 +152,7 @@ class AnomalyDetector:
                     row.get("TimeCreated"),
                     f"Explicit credentials used by {row.get('SubjectUserName', '-')} "
                     f"as {row.get('TargetUserName', '-')} from {row.get('IpAddress', '-')} "
-                    f"(Event 4648)",
+                    f"(Event 4648, LogonType={logon_type}, AuthPkg={auth_pkg or 'unknown'})",
                     0.85,
                     event_id=4648,
                     rule="Pass-the-Hash pattern",
@@ -172,21 +189,35 @@ class AnomalyDetector:
                 )
         return findings
 
+    # REPLACE the entire detect_asrep method (lines 175–188):
+
     def detect_asrep(self) -> List[Dict[str, Any]]:
-        """Flag Kerberos pre-auth failures (4771) as AS-REP roasting candidates."""
+        """Flag 4771 events where PreAuthType=0 (DONT_REQUIRE_PREAUTH set)."""
         df = self._eid(4771)
-        return [
-            self._finding(
-                "AS-REP Roasting",
-                "T1558.004",
-                "Medium",
-                row.get("TimeCreated"),
-                f"Kerberos pre-authentication failed (4771) for {row.get('TargetUserName', '-')}",
-                0.7,
-                event_id=4771,
+        findings = []
+        for _, row in df.iterrows():
+            raw = row.get("RawData") if "RawData" in df.columns else {}
+            if not isinstance(raw, dict):
+                raw = {}
+            pre_auth = str(
+                row.get("PreAuthType") or raw.get("PreAuthType") or raw.get("FailureCode") or ""
+            ).strip()
+            # AS-REP roasting only when DONT_REQUIRE_PREAUTH is set (PreAuthType = "0")
+            if pre_auth not in {"0", "0x0", ""}:
+                continue
+            findings.append(
+                self._finding(
+                    "AS-REP Roasting",
+                    "T1558.004",
+                    "Medium",
+                    row.get("TimeCreated"),
+                    f"Kerberos pre-auth failed (4771) with PreAuthType={pre_auth or 'missing'} "
+                    f"for {row.get('TargetUserName', '-')} — account may have DONT_REQUIRE_PREAUTH set",
+                    0.75,
+                    event_id=4771,
+                )
             )
-            for _, row in df.iterrows()
-        ]
+        return findings
 
     def detect_privilege(self) -> List[Dict[str, Any]]:
         """Flag special privilege assignment (4672) on non-machine accounts."""
@@ -276,7 +307,7 @@ class AnomalyDetector:
             user = safe_str(row.get("TargetUserName"))
             if is_system_account(user):
                 continue
-            if not is_business_hours(ts):
+            if not is_business_hours(ts, utc_offset_hours=0.0):   # assumes UTC == org timezone; pass utc_offset_hours to adjust
                 findings.append(
                     self._finding(
                         "After-Hours Login",

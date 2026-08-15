@@ -1,42 +1,52 @@
 {
   "tool_name": "WinLogin Forensics",
   "tool_version": "1.0.0",
-  "started_at": "2026-08-14 20:02:35 UTC",
-  "completed_at": "2026-08-14 20:02:35 UTC",
+  "started_at": "2026-08-15 04:56:00 UTC",
+  "completed_at": "2026-08-15 04:56:00 UTC",
   "operator": "Ashish",
   "hostname": "Ideapad",
   "platform": "Windows-11-10.0.26200-SP0",
-  "command_line": "src/app.py",
+  "command_line": "C:\\Users\\Ashish\\Documents\\WinLogin-Forensics\\src\\app.py",
   "parameters": {},
-  "source_files": [],
+  "source_files": [
+    {
+      "path": "C:\\tmp\\winlogin_uploads\\DE_RDP_Tunnel_5156.evtx",
+      "filename": "DE_RDP_Tunnel_5156.evtx",
+      "sha256": "25853cab2d474dd52159d45e8c7b139c27b55767be558447ccbc6f494daec786",
+      "size_bytes": "69632"
+    }
+  ],
   "output_files": [
     {
       "path": "C:\\Users\\Ashish\\Documents\\WinLogin-Forensics\\output\\reports\\report.html",
       "filename": "report.html",
-      "sha256": "493590976207a7e17ea85ba1dc97aa2ec5e0015b602c382360d0a08011f4393b"
+      "sha256": "6d861b93f2f936f4b3aa98fe5dd8708bf9282b1fbf7ff323192beb8d0608380c"
     }
   ],
   "actions": [
     {
       "action": "startup",
       "detail": "Chain of custody initialised",
-      "timestamp": "2026-08-14 20:02:35 UTC",
+      "timestamp": "2026-08-15 04:56:00 UTC",
       "operator": "Ashish",
-      "signature": "2d2698f825f11de6856d26ab002b838777c83fa7d52681614689f94ba2a3ddf0"
+      "integrity_hash": "8ce10b0b377db03313fa9658b1cc363af6efe6691451977500c3123f693e1fba",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "output",
-      "detail": "report.html sha256=493590976207a7e17ea85ba1dc97aa2ec5e0015b602c382360d0a08011f4393b",
-      "timestamp": "2026-08-14 20:02:35 UTC",
+      "detail": "report.html sha256=6d861b93f2f936f4b3aa98fe5dd8708bf9282b1fbf7ff323192beb8d0608380c",
+      "timestamp": "2026-08-15 04:56:00 UTC",
       "operator": "Ashish",
-      "signature": "4f31d88a9fc88a4bdf3d18627c46d5d074fda06d3234f00138c48f5c97e7d792"
+      "integrity_hash": "5e493c8db784c2b1a97c97f2acfc6b53cc399b187adcb61aadf70840fa54871f",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "shutdown",
       "detail": "Chain of custody finalised",
-      "timestamp": "2026-08-14 20:02:35 UTC",
+      "timestamp": "2026-08-15 04:56:00 UTC",
       "operator": "Ashish",
-      "signature": "6703cbb672ee5c23e73dc6a186af29557e295b858e2c918d154747b3f7822f5d"
+      "integrity_hash": "68a0c417ebace444c9d2d539a732d0a3fc1e3fe8e7929dd520d50ff059bf62d2",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     }
   ]
 }

@@ -110,7 +110,7 @@ class LiveMonitor:
             # Failed logons have no session — still run rule detector
             if int(parsed.get("EventID", -1)) == 4625:
                 self._score_failed_logon(parsed)
-        self.expire()
+        self.expire(now=parsed.get("TimeCreated"))
         return closed
 
     def run(self, events: Optional[Iterable[Any]] = None) -> Dict[str, Any]:

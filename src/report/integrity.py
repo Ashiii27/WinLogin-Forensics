@@ -233,7 +233,8 @@ class ChainOfCustody:
             except Exception as exc:
                 entry["signature_error"] = str(exc)
         else:
-            entry["signature"] = compute_sha256(payload)
+            entry["integrity_hash"] = compute_sha256(payload)
+            entry["integrity_note"] = "HMAC not available — SHA-256 hash only, not a cryptographic signature"
         self.actions.append(entry)
         return entry
 
@@ -374,13 +375,37 @@ class ReportIntegrity:
         digest = content_hash or self.content_hash
         if not digest:
             raise ValueError("No content hash available for timestamping.")
+        # REPLACE the try block (lines 377–386) inside request_timestamp():
+
         try:
+            # Build a minimal RFC 3161 TimeStampReq (ASN.1 DER)
+            # Structure: SEQUENCE { version INTEGER(1), messageImprint SEQUENCE {
+            #   hashAlgorithm AlgorithmIdentifier, hashedMessage OCTET STRING },
+            #   certReq BOOLEAN TRUE }
+            digest_bytes = bytes.fromhex(digest)
+            # SHA-256 OID: 2.16.840.1.101.3.4.2.1
+            sha256_oid = b"\x06\x09\x60\x86\x48\x01\x65\x03\x04\x02\x01"
+            null_params = b"\x05\x00"
+            alg_id = b"\x30" + bytes([len(sha256_oid) + len(null_params)]) + sha256_oid + null_params
+            hash_octet = b"\x04" + bytes([len(digest_bytes)]) + digest_bytes
+            msg_imprint = b"\x30" + bytes([len(alg_id) + len(hash_octet)]) + alg_id + hash_octet
+            version = b"\x02\x01\x01"          # INTEGER 1
+            cert_req = b"\x01\x01\xff"          # BOOLEAN TRUE
+            inner = version + msg_imprint + cert_req
+            ts_req = b"\x30" + bytes([len(inner)]) + inner
+
             response = requests.post(
                 self.tsa_url,
-                data=bytes.fromhex(digest),
+                data=ts_req,
                 headers={"Content-Type": "application/timestamp-query"},
                 timeout=15,
             )
+            response.raise_for_status()
+            self.timestamp_token = base64.b64encode(response.content).decode("ascii")
+            return self.timestamp_token
+        except Exception as exc:
+            self.timestamp_error = str(exc)
+            return None
             response.raise_for_status()
             self.timestamp_token = base64.b64encode(response.content).decode("ascii")
             return self.timestamp_token

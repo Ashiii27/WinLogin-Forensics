@@ -1,0 +1,102 @@
+{
+  "tool_name": "WinLogin Forensics",
+  "tool_version": "1.0.0",
+  "started_at": "2026-08-15 04:45:20 UTC",
+  "completed_at": "2026-08-15 04:46:24 UTC",
+  "operator": "analyst",
+  "hostname": "Ideapad",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "command_line": "C:\\Users\\Ashish\\Documents\\WinLogin-Forensics\\src\\app.py",
+  "parameters": {
+    "threshold": 0.5,
+    "evtx_paths": [
+      "\\tmp\\winlogin_uploads\\DE_RDP_Tunnel_5156.evtx"
+    ]
+  },
+  "source_files": [
+    {
+      "path": "C:\\tmp\\winlogin_uploads\\DE_RDP_Tunnel_5156.evtx",
+      "filename": "DE_RDP_Tunnel_5156.evtx",
+      "sha256": "25853cab2d474dd52159d45e8c7b139c27b55767be558447ccbc6f494daec786",
+      "size_bytes": "69632"
+    }
+  ],
+  "output_files": [
+    {
+      "path": "\\tmp\\winlogin_uploads\\out\\custody_log.json",
+      "filename": "custody_log.json",
+      "sha256": "201949afd831069c9aeef5c6fa9403af63e33a935cd38fe4298ddda121b5617b"
+    },
+    {
+      "path": "C:\\Users\\Ashish\\Documents\\WinLogin-Forensics\\output\\reports\\report.pdf",
+      "filename": "report.pdf",
+      "sha256": "515459c894675d006330af5e8ec36b40cb69708838612ea1d0ecc04edba693dc"
+    }
+  ],
+  "actions": [
+    {
+      "action": "startup",
+      "detail": "Chain of custody initialised",
+      "timestamp": "2026-08-15 04:45:20 UTC",
+      "operator": "analyst",
+      "integrity_hash": "05c975a17170efe46e4df0ff6d002e4ee6737b0b367af169b0c5c753cde788d8",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
+    },
+    {
+      "action": "ingest",
+      "detail": "DE_RDP_Tunnel_5156.evtx sha256=25853cab2d474dd52159d45e8c7b139c27b55767be558447ccbc6f494daec786",
+      "timestamp": "2026-08-15 04:45:20 UTC",
+      "operator": "analyst",
+      "integrity_hash": "160d81a558f42cab47a72662e351788fa8c1394ca0beb96ab0fe890c1e6641df",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
+    },
+    {
+      "action": "parse",
+      "detail": "101 events",
+      "timestamp": "2026-08-15 04:45:28 UTC",
+      "operator": "analyst",
+      "integrity_hash": "d576abcaf57976d9e102763d56f9c0939412133904c5b390542184e7e68b9448",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
+    },
+    {
+      "action": "correlate",
+      "detail": "5 sessions",
+      "timestamp": "2026-08-15 04:45:33 UTC",
+      "operator": "analyst",
+      "integrity_hash": "615ec26b91c9a60ee0937088342f30f39a98a2982bc5cd6b63e4a00d3f275a8f",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
+    },
+    {
+      "action": "detect",
+      "detail": "23 findings",
+      "timestamp": "2026-08-15 04:46:22 UTC",
+      "operator": "analyst",
+      "integrity_hash": "1265f9377e23c18b0a87feb7a3927e4c4838271ff8af051733b1db4ed4af687c",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
+    },
+    {
+      "action": "shutdown",
+      "detail": "Chain of custody finalised",
+      "timestamp": "2026-08-15 04:46:24 UTC",
+      "operator": "analyst",
+      "integrity_hash": "eb6648409d3bd4a58ed57835976298cff5d804229e03a619fb8f29f493a1b7b3",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
+    },
+    {
+      "action": "output",
+      "detail": "report.pdf sha256=515459c894675d006330af5e8ec36b40cb69708838612ea1d0ecc04edba693dc",
+      "timestamp": "2026-08-15 04:56:00 UTC",
+      "operator": "analyst",
+      "integrity_hash": "6c497cf2c7abbd644d33978f3240114bc251bc5fe24f0f01677b03734c92ff03",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
+    },
+    {
+      "action": "report",
+      "detail": "PDF generated sha256=515459c894675d006330af5e8ec36b40cb69708838612ea1d0ecc04edba693dc",
+      "timestamp": "2026-08-15 04:56:00 UTC",
+      "operator": "analyst",
+      "integrity_hash": "f878bd72de1e1368fb9c605417bb4dbfda0e2f044c59c7138981e5dc312c3720",
+      "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
+    }
+  ]
+}

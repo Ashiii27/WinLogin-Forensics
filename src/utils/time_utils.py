@@ -174,25 +174,35 @@ def utc_now() -> pd.Timestamp:
     return pd.Timestamp.now(tz="UTC")
 
 
-def is_business_hours(ts: Any, start_hour: int = 8, end_hour: int = 18) -> bool:
+def is_business_hours(
+    ts: Any,
+    start_hour: int = 8,
+    end_hour: int = 18,
+    utc_offset_hours: float = 0.0,
+) -> bool:
     """
-    Return True if ``ts`` falls inside weekday business hours (local UTC clock).
+    Return True if ``ts`` falls inside weekday business hours.
 
     Parameters
     ----------
     ts : Any
         Timestamp-like value.
     start_hour, end_hour : int
-        Inclusive start hour and exclusive end hour in UTC.
+        Inclusive start hour and exclusive end hour in *local* time.
+    utc_offset_hours : float
+        Organisation's UTC offset (e.g. -5 for US Eastern, +5.5 for IST).
+        Default 0.0 preserves the original UTC behaviour.
 
     Returns
     -------
     bool
-        True when the timestamp is a weekday within ``[start_hour, end_hour)``.
+        True when the timestamp falls on a weekday within [start_hour, end_hour).
     """
     stamp = normalize_to_utc(ts)
     if stamp is None:
         return False
-    if stamp.dayofweek >= 5:
+    local_hour = (stamp.hour + utc_offset_hours) % 24
+    local_dow = stamp.dayofweek  # good enough for ±12h offsets
+    if local_dow >= 5:
         return False
-    return start_hour <= int(stamp.hour) < end_hour
+    return start_hour <= int(local_hour) < end_hour
