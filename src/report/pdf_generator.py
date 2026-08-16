@@ -206,7 +206,7 @@ def _build_pdf_from_data(data: ReportData, out: Path) -> Path:
 
     # Case metadata table
     case = data.case
-    ts = data.custody.started if data.custody else "N/A"
+    ts = getattr(data.custody, "started_at", None) or getattr(data.custody, "started", None) or "N/A"
     meta_rows = [
         ["Case Number",  _safe(case.case_number),   "Investigator", _safe(case.investigator)],
         ["Organization", _safe(case.organization),  "Analysis Date", _safe(ts)],
@@ -380,7 +380,7 @@ def _build_pdf_from_data(data: ReportData, out: Path) -> Path:
             ["Tool",     _safe(f"WinLogin Forensics {getattr(coc, 'tool_version', '1.0.0')}")],
             ["Operator", _safe(getattr(coc, "operator", ""))],
             ["Started",  _safe(getattr(coc, "started",  ""))],
-            ["Command",  _safe(getattr(coc, "command",  ""))],
+            ["Command",  _safe(getattr(coc, "command_line", ""))],
         ]
         coc_tbl = Table(coc_meta, colWidths=[35*mm, None])
         coc_tbl.setStyle(TableStyle([
@@ -400,8 +400,12 @@ def _build_pdf_from_data(data: ReportData, out: Path) -> Path:
             story.append(Paragraph("Source Files", st["h2"]))
             sf_rows = [["File", "SHA-256"]]
             for sf in src_files:
-                name   = _safe(getattr(sf, "name",   sf) if hasattr(sf, "name") else sf)
-                digest = _safe(getattr(sf, "sha256", "") if hasattr(sf, "sha256") else "")
+                if isinstance(sf, dict):
+                    name   = _safe(sf.get("filename", sf.get("path", "")))
+                    digest = _safe(sf.get("sha256", ""))
+                else:
+                    name   = _safe(getattr(sf, "filename", str(sf)))
+                    digest = _safe(getattr(sf, "sha256", ""))
                 sf_rows.append([name, digest])
             sf_tbl = Table(sf_rows, colWidths=[60*mm, None])
             sf_tbl.setStyle(_tbl_style())
@@ -411,13 +415,21 @@ def _build_pdf_from_data(data: ReportData, out: Path) -> Path:
         actions = getattr(coc, "actions", []) or []
         if actions:
             story.append(Paragraph("Actions Log", st["h2"]))
-            ac_rows = [["Action", "Detail"]]
+            ac_rows = [["Timestamp", "Action", "Detail"]]
             for ac in actions:
-                ac_rows.append([
-                    _safe(getattr(ac, "action", ac) if hasattr(ac, "action") else ac),
-                    _safe(getattr(ac, "detail", "") if hasattr(ac, "detail") else ""),
-                ])
-            ac_tbl = Table(ac_rows, colWidths=[40*mm, None])
+                if isinstance(ac, dict):
+                    ac_rows.append([
+                        _safe(ac.get("timestamp", "")),
+                        _safe(ac.get("action",    "")),
+                        _safe(ac.get("detail",    "")),
+                    ])
+                else:
+                    ac_rows.append([
+                        _safe(getattr(ac, "timestamp", "")),
+                        _safe(getattr(ac, "action",    "")),
+                        _safe(getattr(ac, "detail",    "")),
+                    ])
+            ac_tbl = Table(ac_rows, colWidths=[32*mm, 28*mm, None])
             ac_tbl.setStyle(_tbl_style())
             story.append(ac_tbl)
 

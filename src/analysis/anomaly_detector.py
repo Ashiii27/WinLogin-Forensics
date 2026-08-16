@@ -124,6 +124,7 @@ class AnomalyDetector:
                             rule="Repeated 4625",
                         )
                     )
+            return findings
 
     
     def detect_pass_the_hash(self) -> List[Dict[str, Any]]:

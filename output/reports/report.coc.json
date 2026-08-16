@@ -1,8 +1,8 @@
 {
   "tool_name": "WinLogin Forensics",
   "tool_version": "1.0.0",
-  "started_at": "2026-08-15 04:56:00 UTC",
-  "completed_at": "2026-08-15 04:56:00 UTC",
+  "started_at": "2026-08-15 15:37:22 UTC",
+  "completed_at": "2026-08-15 15:37:25 UTC",
   "operator": "Ashish",
   "hostname": "Ideapad",
   "platform": "Windows-11-10.0.26200-SP0",
@@ -20,32 +20,32 @@
     {
       "path": "C:\\Users\\Ashish\\Documents\\WinLogin-Forensics\\output\\reports\\report.html",
       "filename": "report.html",
-      "sha256": "6d861b93f2f936f4b3aa98fe5dd8708bf9282b1fbf7ff323192beb8d0608380c"
+      "sha256": "bc6f896d60deb6fc62d6ce9e3b8baf8d0bbc2bedc38f6cd3239e12ca135f18e4"
     }
   ],
   "actions": [
     {
       "action": "startup",
       "detail": "Chain of custody initialised",
-      "timestamp": "2026-08-15 04:56:00 UTC",
+      "timestamp": "2026-08-15 15:37:22 UTC",
       "operator": "Ashish",
-      "integrity_hash": "8ce10b0b377db03313fa9658b1cc363af6efe6691451977500c3123f693e1fba",
+      "integrity_hash": "a16b043bbcd4f58320a4a10482f46b4b570ad699030800b5bf1d04019019d3e9",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "output",
-      "detail": "report.html sha256=6d861b93f2f936f4b3aa98fe5dd8708bf9282b1fbf7ff323192beb8d0608380c",
-      "timestamp": "2026-08-15 04:56:00 UTC",
+      "detail": "report.html sha256=bc6f896d60deb6fc62d6ce9e3b8baf8d0bbc2bedc38f6cd3239e12ca135f18e4",
+      "timestamp": "2026-08-15 15:37:25 UTC",
       "operator": "Ashish",
-      "integrity_hash": "5e493c8db784c2b1a97c97f2acfc6b53cc399b187adcb61aadf70840fa54871f",
+      "integrity_hash": "5cb9ec815c277e63347b3ba1e6cd866334a884fd61303679ef28a13c03a7b103",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "shutdown",
       "detail": "Chain of custody finalised",
-      "timestamp": "2026-08-15 04:56:00 UTC",
+      "timestamp": "2026-08-15 15:37:25 UTC",
       "operator": "Ashish",
-      "integrity_hash": "68a0c417ebace444c9d2d539a732d0a3fc1e3fe8e7929dd520d50ff059bf62d2",
+      "integrity_hash": "3b77b18ecb55cfffd35ca71e82033b1fd89dbc174a19752478dd23cac7fea416",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     }
   ]
