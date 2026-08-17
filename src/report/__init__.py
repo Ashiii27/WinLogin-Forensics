@@ -38,6 +38,7 @@ from .pdf_generator import (
     PDFKIT_AVAILABLE,
 )
 
+
 __all__ = [
     # MITRE
     "MITRE_TECHNIQUES",

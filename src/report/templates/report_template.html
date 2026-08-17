@@ -97,10 +97,10 @@
     {% if event_stats.by_event_id %}
     <h3>By Event ID</h3>
     <table>
-      <thead><tr><th>Event ID</th><th>Count</th></tr></thead>
+      <thead><tr><th>Event ID</th><th>Event Name</th><th>Count</th></tr></thead>
       <tbody>
         {% for row in event_stats.by_event_id %}
-        <tr><td>{{ row.EventID }}</td><td>{{ row.count }}</td></tr>
+        <tr><td>{{ row.EventID }}</td><td>{{ row.name }}</td><td>{{ row.count }}</td></tr>
         {% endfor %}
       </tbody>
     </table>

@@ -1,8 +1,8 @@
 {
   "tool_name": "WinLogin Forensics",
   "tool_version": "1.0.0",
-  "started_at": "2026-08-15 04:45:20 UTC",
-  "completed_at": "2026-08-15 04:46:24 UTC",
+  "started_at": "2026-08-17 05:17:43 UTC",
+  "completed_at": "2026-08-17 05:17:44 UTC",
   "operator": "analyst",
   "hostname": "Ideapad",
   "platform": "Windows-11-10.0.26200-SP0",
@@ -25,77 +25,77 @@
     {
       "path": "\\tmp\\winlogin_uploads\\out\\custody_log.json",
       "filename": "custody_log.json",
-      "sha256": "201949afd831069c9aeef5c6fa9403af63e33a935cd38fe4298ddda121b5617b"
+      "sha256": "459067d1e6698376f6d47006c0e11ac1a1ef52a252f53478124188af6b049be9"
     },
     {
       "path": "C:\\Users\\Ashish\\Documents\\WinLogin-Forensics\\output\\reports\\report.pdf",
       "filename": "report.pdf",
-      "sha256": "515459c894675d006330af5e8ec36b40cb69708838612ea1d0ecc04edba693dc"
+      "sha256": "fe4f681a70f894980ee34c4ee9ca832fd34f25966794f1474ec4a70b193c3794"
     }
   ],
   "actions": [
     {
       "action": "startup",
       "detail": "Chain of custody initialised",
-      "timestamp": "2026-08-15 04:45:20 UTC",
+      "timestamp": "2026-08-17 05:17:43 UTC",
       "operator": "analyst",
-      "integrity_hash": "05c975a17170efe46e4df0ff6d002e4ee6737b0b367af169b0c5c753cde788d8",
+      "integrity_hash": "1735f3c5632ed6536965e4c878ed061bd0433940858958e2fedd972c7f5b2208",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "ingest",
       "detail": "DE_RDP_Tunnel_5156.evtx sha256=25853cab2d474dd52159d45e8c7b139c27b55767be558447ccbc6f494daec786",
-      "timestamp": "2026-08-15 04:45:20 UTC",
+      "timestamp": "2026-08-17 05:17:43 UTC",
       "operator": "analyst",
-      "integrity_hash": "160d81a558f42cab47a72662e351788fa8c1394ca0beb96ab0fe890c1e6641df",
+      "integrity_hash": "e593fb07c183776c7db09b897b97fe6a851a3cb3882f888827f4dcc850eab557",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "parse",
       "detail": "101 events",
-      "timestamp": "2026-08-15 04:45:28 UTC",
+      "timestamp": "2026-08-17 05:17:43 UTC",
       "operator": "analyst",
-      "integrity_hash": "d576abcaf57976d9e102763d56f9c0939412133904c5b390542184e7e68b9448",
+      "integrity_hash": "3a64ba66dab6d20a83ebbd500394e25140147407832a89726065538dafdff3f8",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "correlate",
       "detail": "5 sessions",
-      "timestamp": "2026-08-15 04:45:33 UTC",
+      "timestamp": "2026-08-17 05:17:43 UTC",
       "operator": "analyst",
-      "integrity_hash": "615ec26b91c9a60ee0937088342f30f39a98a2982bc5cd6b63e4a00d3f275a8f",
+      "integrity_hash": "cef5b98c621c6f6014ec15547d8d49afca26dcd7cc213aec5d941b449584f2f4",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "detect",
       "detail": "23 findings",
-      "timestamp": "2026-08-15 04:46:22 UTC",
+      "timestamp": "2026-08-17 05:17:44 UTC",
       "operator": "analyst",
-      "integrity_hash": "1265f9377e23c18b0a87feb7a3927e4c4838271ff8af051733b1db4ed4af687c",
+      "integrity_hash": "9a7c77e1dbccdc313300aaec6c3c3179f61dcf3e0ad1a8f2f25d310c5618315a",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "shutdown",
       "detail": "Chain of custody finalised",
-      "timestamp": "2026-08-15 04:46:24 UTC",
+      "timestamp": "2026-08-17 05:17:44 UTC",
       "operator": "analyst",
-      "integrity_hash": "eb6648409d3bd4a58ed57835976298cff5d804229e03a619fb8f29f493a1b7b3",
+      "integrity_hash": "5f8b731552385dfff085ad4f585e9dbdea4ffb43707a78d43c42182ea0f91025",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "output",
-      "detail": "report.pdf sha256=515459c894675d006330af5e8ec36b40cb69708838612ea1d0ecc04edba693dc",
-      "timestamp": "2026-08-15 04:56:00 UTC",
+      "detail": "report.pdf sha256=fe4f681a70f894980ee34c4ee9ca832fd34f25966794f1474ec4a70b193c3794",
+      "timestamp": "2026-08-17 05:17:49 UTC",
       "operator": "analyst",
-      "integrity_hash": "6c497cf2c7abbd644d33978f3240114bc251bc5fe24f0f01677b03734c92ff03",
+      "integrity_hash": "5b1db248529cd80a14abd71cf8336e25b846ecd649acb2c653bc8613db0fd07d",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     },
     {
       "action": "report",
-      "detail": "PDF generated sha256=515459c894675d006330af5e8ec36b40cb69708838612ea1d0ecc04edba693dc",
-      "timestamp": "2026-08-15 04:56:00 UTC",
+      "detail": "PDF generated sha256=fe4f681a70f894980ee34c4ee9ca832fd34f25966794f1474ec4a70b193c3794",
+      "timestamp": "2026-08-17 05:17:49 UTC",
       "operator": "analyst",
-      "integrity_hash": "f878bd72de1e1368fb9c605417bb4dbfda0e2f044c59c7138981e5dc312c3720",
+      "integrity_hash": "1303201d1f3dea0a209425131e9aec39d8279eae5f8283bf4f4e6d82d158f1a5",
       "integrity_note": "HMAC not available \u2014 SHA-256 hash only, not a cryptographic signature"
     }
   ]

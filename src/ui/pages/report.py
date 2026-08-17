@@ -1,4 +1,4 @@
-"""Report — generate and download HTML / PDF forensic reports."""
+"""Report — generate and download HTML or PDF forensic reports."""
 
 from __future__ import annotations
 
@@ -39,27 +39,39 @@ def render() -> None:
         appendix_notes=st.session_state.get("case_notes", ""),
     )
 
-    col_a, col_b = st.columns(2)
-    if col_a.button("Generate HTML", type="primary"):
-        html_path = out_dir / "report.html"
-        html = HtmlReportGenerator().generate_html(data, output_path=html_path, sign=sign)
-        st.session_state.last_html = html
-        st.session_state.last_html_path = str(html_path)
-        st.success(f"Wrote {html_path}")
-    if col_b.button("Generate PDF"):
-        pdf_path = out_dir / "report.pdf"
-        written = PdfReportGenerator().generate(data, pdf_path, sign=sign, custody=result.custody)
-        st.session_state.last_pdf_path = str(written)
-        st.success(f"Wrote {written}")
+    col_html, col_pdf = st.columns(2)
+    with col_html:
+        if st.button("Generate HTML", type="primary"):
+            html_path = out_dir / "report.html"
+            html = HtmlReportGenerator().generate_html(data, output_path=html_path, sign=sign)
+            st.session_state.last_html = html
+            st.session_state.last_html_path = str(html_path)
+            st.success(f"Wrote {html_path}")
+
+    with col_pdf:
+        if st.button("Generate PDF"):
+            pdf_path = out_dir / "report.pdf"
+            pdf_bytes = PdfReportGenerator().generate(data, pdf_path, operator=investigator, custody=result.custody)
+            st.session_state.last_pdf_path = str(pdf_bytes)
+            st.success(f"Wrote {pdf_bytes}")
 
     if st.session_state.get("last_html"):
-        st.download_button("Download HTML", data=st.session_state["last_html"], file_name="winlogin_report.html", mime="text/html")
+        st.download_button(
+            "Download HTML",
+            data=st.session_state["last_html"],
+            file_name="winlogin_report.html",
+            mime="text/html",
+        )
         with st.expander("Preview"):
             st.components.v1.html(st.session_state["last_html"], height=640, scrolling=True)
-    if st.session_state.get("last_pdf_path") and Path(st.session_state["last_pdf_path"]).exists():
-        st.download_button(
-            "Download PDF",
-            data=Path(st.session_state["last_pdf_path"]).read_bytes(),
-            file_name="winlogin_report.pdf",
-            mime="application/pdf",
-        )
+
+    if st.session_state.get("last_pdf_path"):
+        pdf_file = Path(st.session_state["last_pdf_path"])
+        if pdf_file.exists():
+            with open(pdf_file, "rb") as fh:
+                st.download_button(
+                    "Download PDF",
+                    data=fh.read(),
+                    file_name=pdf_file.name,
+                    mime="application/pdf",
+                )
