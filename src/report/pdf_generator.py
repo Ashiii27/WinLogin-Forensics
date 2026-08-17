@@ -68,12 +68,24 @@ class PdfReportGenerator:
             "encoding": "UTF-8",
             "enable-local-file-access": "",
         }
-        if self.wkhtmltopdf_path:
-            options["wkhtmltopdf"] = self.wkhtmltopdf_path
-        elif self._wkhtmltopdf_available():
-            options["wkhtmltopdf"] = shutil.which("wkhtmltopdf")
 
-        pdfkit.from_string(html_content, str(output_path), options=options, verbose=False)
+        # Use pdfkit.configuration to point to the wkhtmltopdf binary when needed.
+        config = None
+        try:
+            if self.wkhtmltopdf_path:
+                # If the provided path is a file/absolute path, use it directly; otherwise try to resolve with shutil.which
+                resolved = shutil.which(str(self.wkhtmltopdf_path)) or str(self.wkhtmltopdf_path)
+                config = pdfkit.configuration(wkhtmltopdf=str(resolved))
+            else:
+                which_path = shutil.which("wkhtmltopdf")
+                if which_path:
+                    config = pdfkit.configuration(wkhtmltopdf=which_path)
+        except Exception:
+            # If configuration fails, leave config as None and let pdfkit try its default discovery.
+            config = None
+
+        # Pass the configuration object explicitly to ensure pdfkit invokes the correct binary.
+        pdfkit.from_string(html_content, str(output_path), options=options, configuration=config)
         return output_path
 
     def _generate_fallback_reportlab(self, data: ReportData, output_path: Path) -> Path:
