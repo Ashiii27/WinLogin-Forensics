@@ -27,6 +27,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -35,6 +36,7 @@ from typing import Dict, List, Optional
 EVTX_SOURCES = {
     "Security": r"C:\Windows\System32\winevt\Logs\Security.evtx",
     "System": r"C:\Windows\System32\winevt\Logs\System.evtx",
+    "Application": r"C:\Windows\System32\winevt\Logs\Application.evtx",
     "Sysmon": r"C:\Windows\System32\winevt\Logs\Microsoft-Windows-Sysmon%4Operational.evtx",
     "PowerShell": r"C:\Windows\System32\winevt\Logs\Microsoft-Windows-PowerShell%4Operational.evtx",
 }
@@ -81,6 +83,31 @@ def is_admin() -> bool:
         return bool(ctypes.windll.shell32.IsUserAnAdmin())
     except Exception:
         return False
+
+
+def request_admin(argv: List[str]) -> bool:
+    """Relaunch this script through the Windows UAC consent dialog."""
+    if not is_windows():
+        return False
+    try:
+        params = subprocess.list2cmdline([str(Path(__file__).resolve()), *argv])
+        result = ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", sys.executable, params, str(Path(__file__).resolve().parent), 1
+        )
+        return result > 32
+    except (AttributeError, OSError):
+        return False
+
+
+def _write_status(path: Optional[Path], exit_code: int, message: str = "") -> None:
+    """Write completion information for a non-elevated caller waiting on UAC."""
+    if path is None:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps({"exit_code": exit_code, "message": message, "completed_at": utc_now()}),
+        encoding="utf-8",
+    )
 
 
 class CustodyLog:
@@ -225,6 +252,26 @@ def save_hive(hive_name: str, output_dir: Path, custody: CustodyLog) -> Optional
         return None
 
 
+def save_current_user_hive(output_dir: Path, custody: CustodyLog) -> Optional[Path]:
+    """Export the loaded current user's hive without copying locked NTUSER.DAT."""
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    dest = output_dir / f"NTUSER_{stamp}.DAT"
+    try:
+        result = _run(["reg", "save", "HKCU", str(dest), "/y"], timeout=90)
+        if result.returncode != 0 or not dest.exists():
+            custody.action("fail", f"reg save HKCU: {result.stderr.strip()}")
+            return None
+        custody.add_file(dest, source="HKCU")
+        custody.action("acquire", f"HKCU -> {dest.name}")
+        return dest
+    except FileNotFoundError:
+        custody.action("fail", "reg.exe not found while exporting HKCU")
+        return None
+    except Exception as exc:
+        custody.action("fail", f"HKCU: {exc}")
+        return None
+
+
 def acquire(
     output_dir: Path,
     evtx: Optional[List[str]] = None,
@@ -259,9 +306,18 @@ def acquire(
     for hive in hives or list(REGISTRY_HIVES):
         save_hive(hive, output_dir, custody)
     if ntuser and ntuser.exists():
-        dest = output_dir / f"NTUSER_{datetime.now().strftime('%Y%m%d_%H%M%S')}.DAT"
-        shutil.copy2(ntuser, dest)
-        custody.add_file(dest, source=str(ntuser))
+        # A logged-in user's NTUSER.DAT is locked. Export HKCU instead, which
+        # produces an equivalent offline hive without touching the source file.
+        if is_windows() and ntuser.resolve() == (Path.home() / "NTUSER.DAT").resolve():
+            save_current_user_hive(output_dir, custody)
+        else:
+            dest = output_dir / f"NTUSER_{datetime.now().strftime('%Y%m%d_%H%M%S')}.DAT"
+            try:
+                shutil.copy2(ntuser, dest)
+                custody.add_file(dest, source=str(ntuser))
+                custody.action("acquire", f"NTUSER.DAT -> {dest.name}")
+            except PermissionError as exc:
+                custody.action("fail", f"NTUSER.DAT is locked and was skipped: {exc}")
 
     custody.save()
     return custody.record
@@ -279,12 +335,22 @@ def main(argv=None) -> int:
     parser.add_argument("--evtx", nargs="*", default=None, help="EVTX names to collect")
     parser.add_argument("--hives", nargs="*", default=None, help="HKLM hive names to export")
     parser.add_argument("--ntuser", type=Path, default=None, help="NTUSER.DAT to copy")
+    parser.add_argument(
+        "--include-ntuser",
+        action="store_true",
+        help="Also acquire the current user's NTUSER.DAT",
+    )
+    parser.add_argument("--status-file", type=Path, default=None, help=argparse.SUPPRESS)
+    parser.add_argument("--elevated", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--force", action="store_true", help="Skip Windows/admin checks (for tests)")
     args = parser.parse_args(argv)
 
     output = args.output_dir or (Path(__file__).resolve().parent / "data" / "samples")
 
-    if not args.force:
+    if args.include_ntuser and args.ntuser is None:
+        args.ntuser = Path.home() / "NTUSER.DAT"
+
+    if not args.force and not args.elevated:
         if not is_windows():
             print("This acquisition helper is intended for live Windows systems.")
             print("Re-run on Windows as Administrator, or pass --force for a dry structure.")
@@ -294,12 +360,41 @@ def main(argv=None) -> int:
             log.save()
             return 2
         if not is_admin():
-            print("Administrator privileges are required.")
+            status_file = args.status_file or output / ".acquisition_status.json"
+            status_file.unlink(missing_ok=True)
+            relaunched_args = [arg for arg in sys.argv[1:] if arg not in {"--elevated"}]
+            if "--status-file" not in relaunched_args:
+                relaunched_args.extend(["--status-file", str(status_file)])
+            relaunched_args.append("--elevated")
+            if not request_admin(relaunched_args):
+                print("Administrator privileges were not granted.")
+                _write_status(status_file, 1, "UAC consent was cancelled or unavailable.")
+                return 1
+            print("UAC consent requested; waiting for the elevated acquisition...")
+            deadline = time.monotonic() + 600
+            while time.monotonic() < deadline:
+                if status_file.exists():
+                    try:
+                        status = json.loads(status_file.read_text(encoding="utf-8"))
+                        print(status.get("message", "Acquisition finished."))
+                        return int(status.get("exit_code", 1))
+                    except (OSError, ValueError):
+                        pass
+                time.sleep(0.25)
+            print("Timed out waiting for the elevated acquisition.", file=sys.stderr)
             return 1
 
-    record = acquire(output, evtx=args.evtx, hives=args.hives, ntuser=args.ntuser)
-    print(f"Acquired {len(record['files'])} file(s). Custody log: {output / 'custody_log.json'}")
-    return 0
+    try:
+        record = acquire(output, evtx=args.evtx, hives=args.hives, ntuser=args.ntuser)
+        message = f"Acquired {len(record['files'])} file(s). Custody log: {output / 'custody_log.json'}"
+        print(message)
+        _write_status(args.status_file, 0, message)
+        return 0
+    except Exception as exc:
+        message = f"Artifact acquisition failed: {type(exc).__name__}: {exc}"
+        print(message, file=sys.stderr)
+        _write_status(args.status_file, 1, message)
+        return 1
 
 
 if __name__ == "__main__":

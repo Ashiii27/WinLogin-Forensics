@@ -14,6 +14,9 @@ numpy>=1.26.0
 streamlit>=1.37.0
 plotly>=5.23.0
 
+# Desktop interface
+PyQt6>=6.7.0
+
 # Reporting
 jinja2>=3.1.4
 pdfkit>=1.0.0

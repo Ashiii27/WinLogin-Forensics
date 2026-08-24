@@ -176,11 +176,17 @@ data/cases/
 output/reports/*.html
 output/reports/*.pdf
 output/reports/*.docx
+output/reports/*.json
 output/exports/*.csv
 output/exports/*.xlsx
 output/exports/*.json
 output/exports/*.xml
 output/temp/
+
+# ============================================================
+# Generated Benchmark Results
+# ============================================================
+benchmarking/results/*.csv
 
 # ============================================================
 # Logs

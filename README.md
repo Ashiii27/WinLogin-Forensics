@@ -98,6 +98,35 @@ Open `http://localhost:8501` in your browser.
 run.bat
 ```
 
+**Qt desktop launch:**
+```bash
+python app_qt.py
+```
+
+In the desktop workbench, **Acquire live artifacts (Admin)** requests Windows
+UAC consent when needed. It copies protected event logs and exports registry
+hives into the selected output directory, hashes each acquired file, and
+writes `custody_log.json`. The app then selects that directory as the analysis
+input automatically. No password is collected or stored by the app.
+
+The desktop workbench supports the same `parse`, `correlate`, `detect`,
+`report`, and `live` workflows as the CLI. Select an EVTX/XML/JSON directory
+or multiple files, optionally provide registry, Sysmon, and PowerShell paths,
+then choose the output format and action. Results are shown in tabs and the
+same JSON, HTML/PDF, and chain-of-custody files are written to the output
+directory.
+
+The acquisition helper can also be run directly on Windows. If the shell is
+not already elevated, it opens the standard UAC consent dialog and waits for
+the elevated copy to finish:
+
+```bash
+python acquire_artifacts.py --output-dir data/acquired --include-ntuser
+```
+
+Acquisition is read-only on the source system. Canceling UAC leaves the
+original evidence untouched and returns a non-zero exit status.
+
 **CLI usage:**
 ```bash
 # Batch analysis

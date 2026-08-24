@@ -1,6 +1,0 @@
-tool,installed,detection_rate,false_positive_rate,precision,recall,f1,events,seconds,seconds_per_1000_events,tp,fp,fn
-WinLogin,True,1.0,0.0,1.0,1.0,1.0,16,0.09044990000256803,5.653118750160502,5,0,0
-Chainsaw,False,0.0,0.0,0.0,0.0,0.0,16,0.0,0.0,0,0,0
-Hayabusa,False,0.0,0.0,0.0,0.0,0.0,16,0.0,0.0,0,0,0
-DeepBlueCLI,False,0.0,0.0,0.0,0.0,0.0,16,0.0,0.0,0,0,0
-Plaso,False,0.0,0.0,0.0,0.0,0.0,16,0.0,0.0,0,0,0

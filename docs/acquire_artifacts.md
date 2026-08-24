@@ -9,13 +9,13 @@
 - **Type:** Standalone utility script
 - **Language:** Python 3.12
 - **Dependencies:** Standard library only (no pip packages needed)
-- **Privileges:** Requires Administrator
+- **Privileges:** Requests Administrator through Windows UAC when needed
 - **Platform:** Windows only
 - **Input:** Live Windows system
 - **Output:** Timestamped forensic artifacts in `data/samples/`
 - **Artifacts Acquired:**
-  - **Event Logs:** `Security.evtx`, `System.evtx`, `Application.evtx`
-  - **Registry Hives:** `SAM`, `SYSTEM`, `SECURITY`, `SOFTWARE`
+    - **Event Logs:** `Security.evtx`, `System.evtx`, `Application.evtx`, Sysmon, PowerShell
+    - **Registry Hives:** `SAM`, `SYSTEM`, `SECURITY`, `SOFTWARE`, optional current-user `NTUSER.DAT`
 
 ---
 
@@ -58,9 +58,16 @@ Instead of one giant function, the script is split into logical parts. Each func
 | `print_summary()` | Final report |
 | `main()` | Orchestrator |
 
-### 2. Fail-Fast Philosophy
+### 2. UAC Consent and Fail-Fast Philosophy
 
-The script exits immediately if the OS is not Windows or if it is not running as Administrator. There is no point wasting time trying to acquire files that will fail anyway.
+On Windows, if the process is not elevated, the script launches an elevated
+copy of itself through the standard `runas` shell verb. The original process
+waits for a completion status file, so callers (including the Qt app) do not
+report success before acquisition finishes. The user must approve the normal
+Windows UAC dialog; the script never handles or stores credentials.
+
+The script exits immediately on non-Windows systems. There is no point wasting
+time trying to acquire files that will fail anyway.
 
 ### 3. Timestamped Files
 
