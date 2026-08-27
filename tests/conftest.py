@@ -24,3 +24,9 @@ def fixtures_dir() -> Path:
 def sample_security_xml(fixtures_dir: Path) -> Path:
     """Path to the sample Security XML export."""
     return fixtures_dir / "events" / "sample_security.xml"
+
+
+@pytest.fixture
+def sample_security_evtx(fixtures_dir: Path) -> Path:
+    """Path to the sample Security EVTX binary."""
+    return fixtures_dir / "events" / "sample_security.evtx"

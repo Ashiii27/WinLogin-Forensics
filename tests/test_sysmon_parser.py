@@ -76,3 +76,10 @@ def test_correlator_links_sysmon_to_session():
 
 def test_sysmon_catalogue():
     assert set(SYSMON_EVENT_IDS) == {1, 3, 11, 22}
+
+
+def test_sysmon_evtx_unavailable(monkeypatch, sample_security_evtx: Path):
+    import src.parsers.sysmon_parser as mod
+    monkeypatch.setattr(mod, "EVTX_AVAILABLE", False)
+    df = mod.SysmonParser(sample_security_evtx).parse()
+    assert df.empty

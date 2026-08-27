@@ -61,3 +61,11 @@ def test_scripts_linked_to_session():
     assert scripts, "expected PowerShell script blocks linked to the session"
     assert any(s.get("Suspicious") for s in scripts)
     assert all(s.get("SessionID") == sessions.iloc[0]["SessionID"] for s in scripts)
+
+
+def test_powershell_evtx_unavailable_raises(monkeypatch, sample_security_evtx: Path):
+    import src.parsers.powershell_parser as mod
+    monkeypatch.setattr(mod, "EVTX_AVAILABLE", False)
+    # When EVTX_AVAILABLE is False, parse() falls through or returns empty
+    df = mod.PowerShellParser(sample_security_evtx).parse()
+    assert df.empty

@@ -1,0 +1,304 @@
+diff --git a/README.md b/README.md
+index 8e1d9e2..c551281 100644
+--- a/README.md
++++ b/README.md
+@@ -537,7 +537,7 @@ WinLogin-Forensics/
+ |---|---|
+ | Language | Python 3.10+ |
+ | Web Interface | Streamlit 1.37 |
+-| EVTX Parsing | python-evtx, evtx, xmltodict |
++| EVTX Parsing | evtx (Rust parser), xmltodict |
+ | Registry Parsing | regipy, python-registry |
+ | Data Processing | pandas |
+ | Visualization | Plotly |
+@@ -645,7 +645,7 @@ This tool is designed for **authorized forensic investigation only** — inciden
+ 
+ ## Acknowledgements
+ 
+-- [python-evtx](https://github.com/williballenthin/python-evtx) by Willi Ballenthin — Windows Event Log parsing library
++- [evtx](https://github.com/omerbenamram/evtx) by Omer Ben-Amram — Fast Windows XML Event Log parser (Rust)
+ - [regipy](https://github.com/mkorman90/regipy) by Maxim Korman — offline Registry hive parsing
+ - [Atomic Red Team](https://github.com/redcanaryco/atomic-red-team) by Red Canary — adversary simulation framework
+ - [EVTX-ATTACK-SAMPLES](https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES) by Samir Bousseaden — labeled attack EVTX samples
+diff --git a/data/README.md b/data/README.md
+index 8605f55..640085c 100644
+--- a/data/README.md
++++ b/data/README.md
+@@ -1,4 +1,4 @@
+-﻿# Sample Data
++# Sample Data
+ 
+ This directory contains anonymized .evtx and Registry hive files for testing.
+ 
+@@ -37,7 +37,7 @@ Write-Host "
+ # requirements.txt
+ New-File "requirements.txt" @"
+ streamlit==1.37.0
+-python-evtx==0.7.4
++evtx>=0.12.0
+ xmltodict==0.13.0
+ regipy==3.1.0
+ python-registry==1.3.1
+diff --git a/requirements.txt b/requirements.txt
+index 9bc4e7d..e57201c 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,5 +1,5 @@
+ # Core parsing
+-python-evtx==0.7.4
++evtx>=0.12.0
+ xmltodict==0.13.0
+ regipy>=4.0.0
+ python-registry==1.3.1
+diff --git a/src/parsers/evtx_parser.py b/src/parsers/evtx_parser.py
+index 96f21ba..567754d 100644
+--- a/src/parsers/evtx_parser.py
++++ b/src/parsers/evtx_parser.py
+@@ -18,7 +18,7 @@ from typing import Any, Dict, Iterable, List, Optional, Union
+ import pandas as pd
+ 
+ try:
+-    import Evtx.Evtx as evtx_lib
++    from evtx import PyEvtxParser
+ 
+     EVTX_AVAILABLE = True
+ except ImportError:  # pragma: no cover
+@@ -291,29 +291,35 @@ class EvtxParser:
+     def _parse_evtx_binary(self) -> pd.DataFrame:
+         if not EVTX_AVAILABLE:
+             raise RuntimeError(
+-                "python-evtx is not installed. Install with: pip install python-evtx"
++                "evtx is not installed. Install with: pip install evtx"
+             )
+         records: List[Dict[str, Any]] = []
+ 
+-        def _consume(evlog) -> None:
+-            for record in evlog.records():
++        def _consume(parser: PyEvtxParser) -> None:
++            it = iter(parser.records())
++            while True:
+                 try:
+-                    xml_str = record.xml()
++                    record = next(it)
++                except StopIteration:
++                    break
+                 except Exception:
+                     continue
++                if isinstance(record, Exception) or not isinstance(record, dict):
++                    continue
++                xml_str = record.get("data")
++                if not xml_str:
++                    continue
+                 parsed = self._parse_xml_string(xml_str)
+                 if parsed:
+                     records.append(parsed)
+ 
+         if self.read_only:
+             with ReadOnlyEvidenceFile(self.file_path, mode="rb"):
+-                # python-evtx needs a filesystem path; we re-open read-only
+-                # after the wrapper has hashed the file at entry.
+-                with evtx_lib.Evtx(str(self.file_path)) as evlog:
+-                    _consume(evlog)
++                parser = PyEvtxParser(str(self.file_path))
++                _consume(parser)
+         else:
+-            with evtx_lib.Evtx(str(self.file_path)) as evlog:
+-                _consume(evlog)
++            parser = PyEvtxParser(str(self.file_path))
++            _consume(parser)
+         return self._normalize_dataframe(pd.DataFrame(records))
+ 
+     def _parse_xml_file(self) -> pd.DataFrame:
+diff --git a/src/parsers/powershell_parser.py b/src/parsers/powershell_parser.py
+index 053d8f0..d5d6aed 100644
+--- a/src/parsers/powershell_parser.py
++++ b/src/parsers/powershell_parser.py
+@@ -22,7 +22,7 @@ from ..utils.safe_reader import ReadOnlyEvidenceFile
+ from ..utils.time_utils import parse_timestamp
+ 
+ try:
+-    import Evtx.Evtx as evtx_lib
++    from evtx import PyEvtxParser
+ 
+     EVTX_AVAILABLE = True
+ except ImportError:  # pragma: no cover
+@@ -164,16 +164,35 @@ class PowerShellParser:
+         return hits
+ 
+     def _parse_evtx(self, path: Path) -> pd.DataFrame:
++        if not EVTX_AVAILABLE:
++            raise RuntimeError("evtx is not installed. Install with: pip install evtx")
+         rows: List[Dict[str, Any]] = []
+-        with ReadOnlyEvidenceFile(path, mode="rb"):
+-            with evtx_lib.Evtx(str(path)) as evlog:
+-                for record in evlog.records():
+-                    try:
+-                        rec = self._parse_xml_string(record.xml())
+-                    except Exception:
+-                        continue
+-                    if rec:
+-                        rows.append(rec)
++
++        def _consume(parser: PyEvtxParser) -> None:
++            it = iter(parser.records())
++            while True:
++                try:
++                    record = next(it)
++                except StopIteration:
++                    break
++                except Exception:
++                    continue
++                if isinstance(record, Exception) or not isinstance(record, dict):
++                    continue
++                xml_str = record.get("data")
++                if not xml_str:
++                    continue
++                rec = self._parse_xml_string(xml_str)
++                if rec:
++                    rows.append(rec)
++
++        if self.read_only:
++            with ReadOnlyEvidenceFile(path, mode="rb"):
++                parser = PyEvtxParser(str(path))
++                _consume(parser)
++        else:
++            parser = PyEvtxParser(str(path))
++            _consume(parser)
+         return self._normalize(pd.DataFrame(rows))
+ 
+     def _parse_xml_document(self, content: str) -> pd.DataFrame:
+diff --git a/src/parsers/sysmon_parser.py b/src/parsers/sysmon_parser.py
+index 577fcaf..38a7c79 100644
+--- a/src/parsers/sysmon_parser.py
++++ b/src/parsers/sysmon_parser.py
+@@ -20,7 +20,7 @@ from ..utils.safe_reader import ReadOnlyEvidenceFile
+ from ..utils.time_utils import parse_timestamp
+ 
+ try:
+-    import Evtx.Evtx as evtx_lib
++    from evtx import PyEvtxParser
+ 
+     EVTX_AVAILABLE = True
+ except ImportError:  # pragma: no cover
+@@ -131,16 +131,35 @@ class SysmonParser:
+         return self._normalize(pd.DataFrame(rows))
+ 
+     def _parse_evtx(self, path: Path) -> pd.DataFrame:
++        if not EVTX_AVAILABLE:
++            raise RuntimeError("evtx is not installed. Install with: pip install evtx")
+         rows: List[Dict[str, Any]] = []
+-        with ReadOnlyEvidenceFile(path, mode="rb"):
+-            with evtx_lib.Evtx(str(path)) as evlog:
+-                for record in evlog.records():
+-                    try:
+-                        rec = self._parse_xml_string(record.xml())
+-                    except Exception:
+-                        continue
+-                    if rec:
+-                        rows.append(rec)
++
++        def _consume(parser: PyEvtxParser) -> None:
++            it = iter(parser.records())
++            while True:
++                try:
++                    record = next(it)
++                except StopIteration:
++                    break
++                except Exception:
++                    continue
++                if isinstance(record, Exception) or not isinstance(record, dict):
++                    continue
++                xml_str = record.get("data")
++                if not xml_str:
++                    continue
++                rec = self._parse_xml_string(xml_str)
++                if rec:
++                    rows.append(rec)
++
++        if self.read_only:
++            with ReadOnlyEvidenceFile(path, mode="rb"):
++                parser = PyEvtxParser(str(path))
++                _consume(parser)
++        else:
++            parser = PyEvtxParser(str(path))
++            _consume(parser)
+         return self._normalize(pd.DataFrame(rows))
+ 
+     def _parse_xml_document(self, content: str) -> pd.DataFrame:
+diff --git a/tests/conftest.py b/tests/conftest.py
+index 15c91c7..fd3b71b 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -24,3 +24,9 @@ def fixtures_dir() -> Path:
+ def sample_security_xml(fixtures_dir: Path) -> Path:
+     """Path to the sample Security XML export."""
+     return fixtures_dir / "events" / "sample_security.xml"
++
++
++@pytest.fixture
++def sample_security_evtx(fixtures_dir: Path) -> Path:
++    """Path to the sample Security EVTX binary."""
++    return fixtures_dir / "events" / "sample_security.evtx"
+diff --git a/tests/test_evtx_parser.py b/tests/test_evtx_parser.py
+index fcb1749..fc450f4 100644
+--- a/tests/test_evtx_parser.py
++++ b/tests/test_evtx_parser.py
+@@ -152,6 +152,27 @@ def test_missing_file_raises(tmp_path: Path):
+         EvtxParser(tmp_path / "nope.evtx").parse()
+ 
+ 
++def test_parse_binary_evtx_with_rust_parser(sample_security_evtx: Path):
++    df = EvtxParser(sample_security_evtx, include_unsupported=True).parse()
++    assert isinstance(df, pd.DataFrame)
++    assert df.shape[0] > 0
++    for col in EVENT_SCHEMA:
++        assert col in df.columns
++
++
++def test_parse_binary_evtx_read_only_false(sample_security_evtx: Path):
++    df = EvtxParser(sample_security_evtx, read_only=False, include_unsupported=True).parse()
++    assert isinstance(df, pd.DataFrame)
++    assert df.shape[0] > 0
++
++
++def test_evtx_parser_unavailable_raises(monkeypatch, sample_security_evtx: Path):
++    import src.parsers.evtx_parser as mod
++    monkeypatch.setattr(mod, "EVTX_AVAILABLE", False)
++    with pytest.raises(RuntimeError, match="evtx is not installed"):
++        EvtxParser(sample_security_evtx).parse()
++
++
+ @pytest.mark.parametrize(
+     "rule,technique",
+     [
+diff --git a/tests/test_powershell_parser.py b/tests/test_powershell_parser.py
+index 6df3800..853a640 100644
+--- a/tests/test_powershell_parser.py
++++ b/tests/test_powershell_parser.py
+@@ -61,3 +61,11 @@ def test_scripts_linked_to_session():
+     assert scripts, "expected PowerShell script blocks linked to the session"
+     assert any(s.get("Suspicious") for s in scripts)
+     assert all(s.get("SessionID") == sessions.iloc[0]["SessionID"] for s in scripts)
++
++
++def test_powershell_evtx_unavailable_raises(monkeypatch, sample_security_evtx: Path):
++    import src.parsers.powershell_parser as mod
++    monkeypatch.setattr(mod, "EVTX_AVAILABLE", False)
++    # When EVTX_AVAILABLE is False, parse() falls through or returns empty
++    df = mod.PowerShellParser(sample_security_evtx).parse()
++    assert df.empty
+diff --git a/tests/test_sysmon_parser.py b/tests/test_sysmon_parser.py
+index acc7027..29f97c4 100644
+--- a/tests/test_sysmon_parser.py
++++ b/tests/test_sysmon_parser.py
+@@ -76,3 +76,10 @@ def test_correlator_links_sysmon_to_session():
+ 
+ def test_sysmon_catalogue():
+     assert set(SYSMON_EVENT_IDS) == {1, 3, 11, 22}
++
++
++def test_sysmon_evtx_unavailable(monkeypatch, sample_security_evtx: Path):
++    import src.parsers.sysmon_parser as mod
++    monkeypatch.setattr(mod, "EVTX_AVAILABLE", False)
++    df = mod.SysmonParser(sample_security_evtx).parse()
++    assert df.empty

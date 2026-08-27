@@ -18,7 +18,7 @@ from typing import Any, Dict, Iterable, List, Optional, Union
 import pandas as pd
 
 try:
-    import Evtx.Evtx as evtx_lib
+    from evtx import PyEvtxParser
 
     EVTX_AVAILABLE = True
 except ImportError:  # pragma: no cover
@@ -291,15 +291,23 @@ class EvtxParser:
     def _parse_evtx_binary(self) -> pd.DataFrame:
         if not EVTX_AVAILABLE:
             raise RuntimeError(
-                "python-evtx is not installed. Install with: pip install python-evtx"
+                "evtx is not installed. Install with: pip install evtx"
             )
         records: List[Dict[str, Any]] = []
 
-        def _consume(evlog) -> None:
-            for record in evlog.records():
+        def _consume(parser: PyEvtxParser) -> None:
+            it = iter(parser.records())
+            while True:
                 try:
-                    xml_str = record.xml()
+                    record = next(it)
+                except StopIteration:
+                    break
                 except Exception:
+                    continue
+                if isinstance(record, Exception) or not isinstance(record, dict):
+                    continue
+                xml_str = record.get("data")
+                if not xml_str:
                     continue
                 parsed = self._parse_xml_string(xml_str)
                 if parsed:
@@ -307,13 +315,11 @@ class EvtxParser:
 
         if self.read_only:
             with ReadOnlyEvidenceFile(self.file_path, mode="rb"):
-                # python-evtx needs a filesystem path; we re-open read-only
-                # after the wrapper has hashed the file at entry.
-                with evtx_lib.Evtx(str(self.file_path)) as evlog:
-                    _consume(evlog)
+                parser = PyEvtxParser(str(self.file_path))
+                _consume(parser)
         else:
-            with evtx_lib.Evtx(str(self.file_path)) as evlog:
-                _consume(evlog)
+            parser = PyEvtxParser(str(self.file_path))
+            _consume(parser)
         return self._normalize_dataframe(pd.DataFrame(records))
 
     def _parse_xml_file(self) -> pd.DataFrame:
