@@ -1,4 +1,4 @@
-﻿# Sample Data
+# Sample Data
 
 This directory contains anonymized .evtx and Registry hive files for testing.
 
@@ -37,7 +37,7 @@ Write-Host "
 # requirements.txt
 New-File "requirements.txt" @"
 streamlit==1.37.0
-python-evtx==0.7.4
+evtx>=0.12.0
 xmltodict==0.13.0
 regipy==3.1.0
 python-registry==1.3.1

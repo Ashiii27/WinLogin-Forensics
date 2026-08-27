@@ -22,7 +22,7 @@ from ..utils.safe_reader import ReadOnlyEvidenceFile
 from ..utils.time_utils import parse_timestamp
 
 try:
-    import Evtx.Evtx as evtx_lib
+    from evtx import PyEvtxParser
 
     EVTX_AVAILABLE = True
 except ImportError:  # pragma: no cover
@@ -164,16 +164,35 @@ class PowerShellParser:
         return hits
 
     def _parse_evtx(self, path: Path) -> pd.DataFrame:
+        if not EVTX_AVAILABLE:
+            raise RuntimeError("evtx is not installed. Install with: pip install evtx")
         rows: List[Dict[str, Any]] = []
-        with ReadOnlyEvidenceFile(path, mode="rb"):
-            with evtx_lib.Evtx(str(path)) as evlog:
-                for record in evlog.records():
-                    try:
-                        rec = self._parse_xml_string(record.xml())
-                    except Exception:
-                        continue
-                    if rec:
-                        rows.append(rec)
+
+        def _consume(parser: PyEvtxParser) -> None:
+            it = iter(parser.records())
+            while True:
+                try:
+                    record = next(it)
+                except StopIteration:
+                    break
+                except Exception:
+                    continue
+                if isinstance(record, Exception) or not isinstance(record, dict):
+                    continue
+                xml_str = record.get("data")
+                if not xml_str:
+                    continue
+                rec = self._parse_xml_string(xml_str)
+                if rec:
+                    rows.append(rec)
+
+        if self.read_only:
+            with ReadOnlyEvidenceFile(path, mode="rb"):
+                parser = PyEvtxParser(str(path))
+                _consume(parser)
+        else:
+            parser = PyEvtxParser(str(path))
+            _consume(parser)
         return self._normalize(pd.DataFrame(rows))
 
     def _parse_xml_document(self, content: str) -> pd.DataFrame:

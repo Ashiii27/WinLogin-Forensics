@@ -152,6 +152,27 @@ def test_missing_file_raises(tmp_path: Path):
         EvtxParser(tmp_path / "nope.evtx").parse()
 
 
+def test_parse_binary_evtx_with_rust_parser(sample_security_evtx: Path):
+    df = EvtxParser(sample_security_evtx, include_unsupported=True).parse()
+    assert isinstance(df, pd.DataFrame)
+    assert df.shape[0] > 0
+    for col in EVENT_SCHEMA:
+        assert col in df.columns
+
+
+def test_parse_binary_evtx_read_only_false(sample_security_evtx: Path):
+    df = EvtxParser(sample_security_evtx, read_only=False, include_unsupported=True).parse()
+    assert isinstance(df, pd.DataFrame)
+    assert df.shape[0] > 0
+
+
+def test_evtx_parser_unavailable_raises(monkeypatch, sample_security_evtx: Path):
+    import src.parsers.evtx_parser as mod
+    monkeypatch.setattr(mod, "EVTX_AVAILABLE", False)
+    with pytest.raises(RuntimeError, match="evtx is not installed"):
+        EvtxParser(sample_security_evtx).parse()
+
+
 @pytest.mark.parametrize(
     "rule,technique",
     [

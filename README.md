@@ -537,7 +537,7 @@ WinLogin-Forensics/
 |---|---|
 | Language | Python 3.10+ |
 | Web Interface | Streamlit 1.37 |
-| EVTX Parsing | python-evtx, evtx, xmltodict |
+| EVTX Parsing | evtx (Rust parser), xmltodict |
 | Registry Parsing | regipy, python-registry |
 | Data Processing | pandas |
 | Visualization | Plotly |
@@ -645,7 +645,7 @@ This tool is designed for **authorized forensic investigation only** — inciden
 
 ## Acknowledgements
 
-- [python-evtx](https://github.com/williballenthin/python-evtx) by Willi Ballenthin — Windows Event Log parsing library
+- [evtx](https://github.com/omerbenamram/evtx) by Omer Ben-Amram — Fast Windows XML Event Log parser (Rust)
 - [regipy](https://github.com/mkorman90/regipy) by Maxim Korman — offline Registry hive parsing
 - [Atomic Red Team](https://github.com/redcanaryco/atomic-red-team) by Red Canary — adversary simulation framework
 - [EVTX-ATTACK-SAMPLES](https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES) by Samir Bousseaden — labeled attack EVTX samples
